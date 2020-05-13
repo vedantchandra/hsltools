@@ -22,7 +22,6 @@ class Multivar:
 		pass
 
 	def resample(signal1, signal2):
-    	#samples = np.max([len(signal1), len(signal2)])
 	    ts = np.linspace(0, 1500, 1500)
 
     	f1 = scipy.interpolate.interp1d(np.linspace(0, 1500, len(signal1)), signal1, kind = 'linear')
@@ -45,9 +44,6 @@ class Multivar:
     
     	X = (signal1 - np.mean(signal1)) / np.std(signal1)
    		Y = (signal2 - np.mean(signal2)) / np.std(signal2)
-    
-		#     X = detrend(X)
-		#     Y = detrend(Y)
     
     	xcorr = np.correlate(X, Y, mode='full')
     	xcorr = xcorr[(xcorr.size // 2 ):] / np.max(xcorr)
@@ -114,12 +110,10 @@ class Multivar:
                 z += (N-m) * Cxyy(x, y, r, s, N)**2
         return z
 
-	def multi_features(signal1, signal2, name):
+	def multivar_all_features(signal1, signal2, name): #returns all multivar features in data frame
     	functions = [xcorr_lagtime, xbicorr]
     	measure_names = [name+'_xcorr_lag', name+'_xbicorr']
     	features = np.asarray([func(signal1, signal2) for func in functions]).reshape(-1,1)
-    	functionsdf = pd.DataFrame(columns = measure_names, data = features.T)
+    	fdf = pd.DataFrame(columns = measure_names, data = features.T)
     	return fdf
-
-
 

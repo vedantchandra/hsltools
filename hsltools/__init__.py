@@ -10,3 +10,7 @@ __init__.py				Basics.py				IBI.py				EDA.py				etc.
 
 """
 from Basics import Basics
+from EDA import EDA
+from Multivar import Multivar
+from Shimmer import Shimmer
+from IBI import IBI

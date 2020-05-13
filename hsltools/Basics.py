@@ -17,18 +17,12 @@ import corner
 import scipy
 
 class Basics:
-    #to do/questions: 
-    #is self necessary in this instance, if not is the init function blank?
-    #Is there any object, can I just have a list of functions without a class since they will all be static methods? 
-    #Is the signal the object? 
-    #will all inputted data have the same attributes?
-    #I have been reading a lot about python packages and looking at the source code for data analysis packages, but I still need to do more research 
-
+    
 	def __init__(self): 
+        pass
 
-
-    #copied from github
-	def signal_statistics(signal): #copied from github
+    #returns array of basic statistics (mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, dfa_exp)
+	def signal_statistics(signal): 
     	mean = np.mean(signal)
     	std = np.std(signal)
     	skewness = stats.skew(signal)

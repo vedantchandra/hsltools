@@ -1,6 +1,9 @@
 #Import classes from package
 from hsltools import Basics
-
+from hsltools import EDA
+from hsltools import Multivar
+from hsltools import Shimmer
+from hsltools import IBI
 
 import pickle as p
 import pandas as pd
@@ -112,6 +115,7 @@ plt.rc('font',**font)
 
 
 #testing package
+ 
 
 ibi_signal = get_split_signal('IBI', epoch, subjno, splitno)
 testBasics = Basics()
