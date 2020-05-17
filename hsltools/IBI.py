@@ -16,40 +16,84 @@ from scipy.signal import medfilt,butter
 import corner
 import scipy
 
-class IBI:
 
-  	def __init__(self): 
-		pass
+def rmssd(signal):
+	"""
+    Description of module level function. 
 
-	def ibi_iqr(signal): #interquartile range
-	    return scipy.stats.iqr(signal)
+    Parameters
+    ----------
+    signal : array-like
+        The first parameter.
 
-	def ibi_std(signal): 
-	    return np.std(signal)
+    Returns
+    -------
+    ndarray
+        np.sqrt(np.mean(np.square(np.diff(signal))))
+   
+    """
+    return np.sqrt(np.mean(np.square(np.diff(signal))))
 
-	def rmssd(signal):
-	    return np.sqrt(np.mean(np.square(np.diff(signal))))
+def ibi_passbands(signal):
+	"""
+    Description of module level function. 
 
-	def ibi_passbands(signal):
-	    fs,pxx = scipy.signal.periodogram(signal, nfft = 1000, scaling = 'density', detrend = 'constant')
+    Parameters
+    ----------
+    signal : array-like
+        The first parameter.
 
-	    vlfband = (fs > 0.0033)*(fs < 0.04)
-	    lfband = (fs > 0.04)*(fs < 0.15)
-	    hfband = (fs > 0.15) * (fs < 0.4)
+    Returns
+    -------
+    array-like
+        [vlf_integral,lf_integral,hf_integral]
+    """
+    fs,pxx = scipy.signal.periodogram(signal, nfft = 1000, scaling = 'density', detrend = 'constant')
 
-	    vlf_integral = np.trapz(pxx[vlfband],fs[vlfband]) #unsure what this does
-	    lf_integral = np.trapz(pxx[lfband],fs[lfband])
-	    hf_integral = np.trapz(pxx[hfband],fs[hfband])
+    vlfband = (fs > 0.0033)*(fs < 0.04)
+    lfband = (fs > 0.04)*(fs < 0.15)
+    hfband = (fs > 0.15) * (fs < 0.4)
 
-	    return [vlf_integral,lf_integral,hf_integral]
+    vlf_integral = np.trapz(pxx[vlfband],fs[vlfband])
+    lf_integral = np.trapz(pxx[lfband],fs[lfband])
+    hf_integral = np.trapz(pxx[hfband],fs[hfband])
 
-	def ibi_lfhf(signal):
-	    return ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
+    return [vlf_integral,lf_integral,hf_integral]
 
-	def ibi_all_features(signal): #returns all ibi features in data frame
-    	functions = [ibi_iqr, ibi_std, rmssd, ibi_lfhf]
-    	measure_names = ['ibi_iqr', 'ibi_std', 'ibi_rmssd', 'ibi_lf/hf']
-    	features = np.asarray([func(signal) for func in functions]).reshape(-1,1)
-    	fdf = pd.DataFrame(columns = measure_names, data = features.T)
-    	return fdf
+def ibi_lfhf(signal):
+    """
+    Description of module level function. 
 
+    Parameters
+    ----------
+    signal : array-like
+        The first parameter.
+
+    Returns
+    -------
+    placeholder
+        ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
+
+    """
+    return ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
+
+def ibi_all_features(signal): #returns all ibi features in data frame
+   	"""
+    Description of module level function. 
+
+    Parameters
+    ----------
+    signal : array-like
+        The first parameter.
+
+    Returns
+    -------
+    DataFrame
+        ['ibi_rmssd', 'ibi_lf/hf']
+
+    """
+   	functions = [rmssd, ibi_lfhf]
+   	measure_names = ['ibi_rmssd', 'ibi_lf/hf']
+   	features = np.asarray([func(signal) for func in functions]).reshape(-1,1)
+   	fdf = pd.DataFrame(columns = measure_names, data = features.T)
+   	return fdf
