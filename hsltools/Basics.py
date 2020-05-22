@@ -24,18 +24,18 @@ Basics is a module consisting of basic statistic functions applicable to all sig
 def signal_statistics(signal):
     """
     Returns an array containing basic statistics of the signal (mean, standard deviation, skewness, 
-    kurtosis, maximum, minimum, interquartile range, variation, entropy, DFA).
-    
+    kurtosis, maximum, minimum, interquartile range, variation, entropy, scaled correlation time).
+
     Parameters
     ----------
     signal : array-like
         Array containing numbers whose basic statistics are desired.     
-    
+
     Returns
     -------
     ndarray
         Returns array of basic statistics [mean, std, skewness, kurtosis, maximum, minimum, iqr, 
-        variation, entropy, dfa_exp].
+        variation, entropy, corrtime].
 
         mean - mean of the signal
         std - standard deviation of the signal
@@ -46,20 +46,20 @@ def signal_statistics(signal):
         iqr - interquartile range, statistical dispersion as the diffrence betwen the upper and lower quartiles 
         variation - ratio of the biased standard deviation to the mean
         entropy - measure of uncertainty using Shannon entropy
-        dfa_exp - discriminant function analysis, detrended fluctuation analysis, deterministic finite automaton??
-    
+        corrtime - see scaled_correlation_time
+
     """
-   	mean = np.mean(signal)
-   	std = np.std(signal)
-   	skewness = stats.skew(signal)
-   	kurtosis = stats.kurtosis(signal) #sharpness of the peak of a freq-distrib curve
-   	maximum = np.max(signal)
-   	minimum = np.min(signal)
-   	iqr = stats.iqr(signal)
-   	variation = stats.variation(signal)
-   	entropy = stats.entropy(np.abs(signal))
-   	dfa_exp = 0  #dfa(signal) 
-   	return np.asarray([mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, dfa_exp])
+    mean = np.mean(signal)
+    std = np.std(signal)
+    skewness = stats.skew(signal)
+    kurtosis = stats.kurtosis(signal) #sharpness of the peak of a freq-distrib curve
+    maximum = np.max(signal)
+    minimum = np.min(signal)
+    iqr = stats.iqr(signal)
+    variation = stats.variation(signal)
+    entropy = stats.entropy(np.abs(signal))
+    corrtime = scaled_correlation_time(signal,signal) 
+    return np.asarray([mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, corrtime])
 
 
 def ss_dataframe(signal):
@@ -75,9 +75,34 @@ def ss_dataframe(signal):
     -------
     DataFrame
         Returns a data frame of basic statistics with column headings [mean, std, skewness, kurtosis, 
-        maximum, minimum, iqr, variation, entropy, dfa_exp].
-    
+        maximum, minimum, iqr, variation, entropy, corrtime] (see signal_statistics).
+
     """
-	stat_names = ['mean', 'std', 'skewness', 'kurtosis', 'maximum', 'minimum', 'iqr', 'variation', 'entropy', 'dfa_exp']
-	fdf = pd.DataFrame(columns = stat_names, data = basic_stats.T)
-	return fdf
+    stat_names = ['mean', 'std', 'skewness', 'kurtosis', 'maximum', 'minimum', 'iqr', 'variation', 'entropy', 'corrtime']
+    fdf = pd.DataFrame(columns = stat_names, data = basic_stats.T)
+    return fdf
+
+def scaled_correlation_time(signal1, signal2):
+    """
+    Returns the scaled correlation time of the signal.   
+
+    Parameters
+    ----------
+    signal1 : array-like
+        Array containing numbers whose correlation time is desired.
+    signal2 : array-like
+        Array containing numbers whose correlation time is desired.
+
+    Returns
+    -------
+    ndarray of ints
+        Returns the scaled correlation time of the signals. 
+   
+    """
+
+    signal1 = (signal1 - np.mean(signal1))/np.std(signal1)
+    signal2 = (signal2 - np.mean(signal2))/np.std(signal2)
+    acorr = np.correlate(signal1, signal2, mode='full')
+    acorr = acorr[(acorr.size // 2 ):] / np.max(acorr)
+    tau = np.argmax([acorr < 1/np.exp(1)])
+    return tau / len(acorr)

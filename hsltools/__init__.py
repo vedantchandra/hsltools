@@ -10,11 +10,14 @@ __init__.py				basics.py				ibi.py				eda.py				etc.
 
 """
 
-"""questions:
+"""
+questions/notes:
 
-	in signalstatistics, the dfa_exp is set to 0 but dfa(signal) is commented out, is this intentional?  
-	in multivar, xcorr_lagtime(signal1, signal2, make_plot = False, sig1 = '', sig2 = ''), should the makeplot just be deleted? 
+	in signalstatistics, the dfa_exp is set to 0 but dfa(signal) is commented out, is this intentional? 
+        update: dfa was replaced with scaled correlation time according to apara's sandbox, is this preferred? 
 	are get_shimmer and get_split_shimmer necessary? They seem specific to our data. 
+    unsure what shimmer.fnn does
+    multivar features are not detailed / Cxyy & xbicorr are incomplete. 
 
 
 """
