@@ -23,8 +23,8 @@ Basics is a module consisting of basic statistic functions applicable to all sig
 
 def signal_statistics(signal):
     """
-    Returns an array containing basic statistics of the signal (mean, standard deviation, skewness, kurtosis, 
-    maximum, minimum, interquartile range, variation, entropy, DFA).
+    Returns an array containing basic statistics of the signal (mean, standard deviation, skewness, 
+    kurtosis, maximum, minimum, interquartile range, variation, entropy, DFA).
     
     Parameters
     ----------
@@ -34,7 +34,8 @@ def signal_statistics(signal):
     Returns
     -------
     ndarray
-        Returns array of basic statistics [mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, dfa_exp].
+        Returns array of basic statistics [mean, std, skewness, kurtosis, maximum, minimum, iqr, 
+        variation, entropy, dfa_exp].
 
         mean - mean of the signal
         std - standard deviation of the signal
@@ -63,7 +64,7 @@ def signal_statistics(signal):
 
 def ss_dataframe(signal):
     """
-    Returns signal_statistics in the form of a labeled data frame. 
+    Returns signal_statistics of the signal in the form of a labeled data frame. 
 
     Parameters
     ----------
@@ -73,14 +74,10 @@ def ss_dataframe(signal):
     Returns
     -------
     DataFrame
-        Returns a data frame of basic statistics with column headings [mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, dfa_exp].
+        Returns a data frame of basic statistics with column headings [mean, std, skewness, kurtosis, 
+        maximum, minimum, iqr, variation, entropy, dfa_exp].
     
     """
 	stat_names = ['mean', 'std', 'skewness', 'kurtosis', 'maximum', 'minimum', 'iqr', 'variation', 'entropy', 'dfa_exp']
 	fdf = pd.DataFrame(columns = stat_names, data = basic_stats.T)
 	return fdf
-
-
-
-
-

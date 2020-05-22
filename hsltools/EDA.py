@@ -16,16 +16,19 @@ from scipy.signal import medfilt,butter
 import corner
 import scipy
 
-#EDA functions include: passbands, lfhf, features 
+"""
+EDA is a module consisting of features designed to specifically analyze electrodermal activity.
+
+"""
 
 def mean_firstdiff(signal):
 	"""
-    In a person at rest, the EDA signal has a tendency to decay over time, leading to smaller, often 
-    negative first differences. Orienting responses are more common in active states, and are 
-    characterized by larger changes in the EDA signal. Thus, the first differences in perturbed 
-    epochs would be expected to be higher in magnitude[1]. Feature extraction from the first and 
-    second differences of the EDA signal have also been used to study the manifestation of 
-    psychological[2] stress.
+    Returns the mean first difference of the EDA signal. 
+
+    The first difference in perturbed epochs is expected to be higher in magnitude than those at 
+    rest due to the orienting responses in active states [1]. Feature extraction from the first and 
+    second differences of the EDA signal can be used to study the manifestation of psychological 
+    stress [2].
 
 	[1] 
 	Blain et al., 2008 S. Blain, A. Mihailidis, T. Chau Assessing the potential of electrodermal 
@@ -44,7 +47,7 @@ def mean_firstdiff(signal):
     Returns
     -------
     ndarray
-        Returns the mean value of the first differences. 
+        Returns the mean value of the signal's first differences. 
 
     """
 
@@ -52,8 +55,7 @@ def mean_firstdiff(signal):
 
 def std_firstdiff(signal):
 	"""
-	
-    description
+    Returns the standard deviation of the EDA signal's first difference (see mean_firstdiff). 
 
     Parameters
     ----------
@@ -63,14 +65,14 @@ def std_firstdiff(signal):
     Returns
     -------
     ndarray
-        Returns the standard deviation of the first differences. 
+        Returns the standard deviation of the signal's first differences. 
 
     """
     return np.std(np.abs(np.diff(signal, n=1)))
 
 def mean_seconddiff(signal):
 	"""
-    description
+    Returns the mean second difference of the EDA signal (see mean_firstdiff).
 
 	Parameters
     ----------
@@ -80,14 +82,14 @@ def mean_seconddiff(signal):
     Returns
     -------
     ndarray
-        Returns a new array containing the mean values of the second differences. 
+        Returns the mean value of the signal's second differences.
 
     """
     return np.mean(np.abs(np.diff(signal, n=2)))
 
 def std_seconddiff(signal):
     """
-    Description of module level function. 
+    Returns the standard deviation of the EDA signal's second difference (see mean_firstdiff).
 
     Parameters
     ----------
@@ -97,24 +99,29 @@ def std_seconddiff(signal):
     Returns
     -------
     ndarray
-        Returns the standard deviation of the second differences. 
+        Returns the standard deviation of the signal's second differences. 
 
     """
     return np.std(np.abs(np.diff(signal, n=2)))
 
 def find_peaks(signal):
     """
-    Description of module level function. 
+    Returns the peaks of the EDA signal and returns the minima between the peaks.  
+
+    A median filter (with a window size of 31) is first applied to reduce noise. Peaks of the orienting 
+    response are calculated using peak prominence and distance between responses as 
+    constraints to further avoid noise. The minima between peaks is also calculated.
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose peaks are desired.  
 
     Returns
     -------
-    placeholder
-        peaks, min_peaks
+    (ndarray, ndarray)
+        Returns the indices of peaks in the signal.
+        Returns minima between the peaks.
     
     """
     #normalize function
@@ -128,26 +135,20 @@ def find_peaks(signal):
     min_0 = np.argmin(signal[0:peaks[0]])
     min_peaks = [min_0]
     for i in range(1,len(peaks)):
-        min_i = np.argmin(signal[peaks[i-1]:peaks[i]])
         min_peaks.append((peaks[i-1]+min_i))
     return peaks, min_peaks
 
 def orienting_features(signal):
     """
-    The bulk of the features extracted from the EDA signal were predicated on the idea of orienting 
-    responses. An orienting response is a multisystem reaction evoked by exposure to a novel 
-    stimulus [1]. One part of the physiological response is the ionic filling of sweat glands in the skin 
-    due to the activation of the sympathetic nervous system [2]. This leads to a sudden rise in skin 
-    conductance, as well as an automatic shift of attentional resources to the stimulus [3]. To find 
-    orienting responses within the EDA signal, a median filter (with a window size of 31) was first 
-    applied to reduce noise. Using peak prominence and distance between responses as 
-    constraints to further avoid noise, the peaks of the orienting responses were calculated, and the 
-    minima between peaks was used as the onset of the orienting reflex. As calculated in Healy and 
-    Picard, key features included the sum of the startle magnitudes, the sum of response durations, 
-    and the estimated areas under the response curves. Additional features consist of the 
-    respective sums of the peaks and onsets, the mean response duration, and the mean and total 
-    amplitude of the peaks which were calculated as Σ(Xpeak + Xonset)/2 and 
-    (Σ(Xpeak+Xonset)/2)/num_peaks. 
+    Returns an array containing features of orienting response of the EDA signal as calculated in 
+    Healy and Picard (number of onsets, sum of onsets, sum of peaks, difference between sum of 
+    onsets and peaks, sum of area under response curve, sum of orienting response duration, 
+    mean of orienting response duration, mean amplitude of peaks, total amplitude of peaks). 
+
+    An orienting response is a multisystem reaction evoked by exposure to a novel stimulus [1]. 
+    One part of the physiological response is the ionic filling of sweat glands in the skin due to the 
+    activation of the sympathetic nervous system [2]. This leads to a sudden rise in skin 
+    conductance, as well as an automatic shift of attentional resources to the stimulus [3].  
 
     [1] 
     Friedman D, Goldman R, Stern Y, Brown TR. The brain's orienting response: 
@@ -164,13 +165,24 @@ def orienting_features(signal):
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose orienting response features are desired.
 
     Returns
     -------
     array-like
-        [num_onsets, sum_onsets, sum_peaks, sum_difference, sum_areas, sum_od, mean_od, mean_amp, total_amp]
+        Returns an array of orienting response features of the signal [num_onsets, sum_onsets, sum_peaks, 
+        sum_difference, sum_areas, sum_od, mean_od, mean_amp, total_amp].
 
+        num_onsets - number of onsets/minima (see find_peaks) 
+        sum_onsets - sum of onsets/minima (see find_peaks)
+        sum_peaks - sum of peaks (see find_peaks)
+        sum_difference - difference between sum_peaks and sum_onsets
+        sum_areas - estimated areas under the orienting response curves
+        sum_od - sum of the orienting response durations
+        mean_od - mean of the orienting response durations
+        mean_amp - mean amplitude of the peaks calculated as (Σ(Xpeak+Xonset)/2)/num_peaks (see find_peaks)
+        total_amp - the total amplitude of the peaks Σ(Xpeak+Xonset)/2 (see find_peaks)
+        
     """
     peaks, onsets = find_peaks(signal)
     num_onsets = len(onsets)
@@ -200,15 +212,14 @@ def orienting_features(signal):
 
 def eda_passbands(signal):
     """
-    Techniques involving power spectral density (PSD) similar to those used to study heart rate 
-    variability can be used to analyze EDA. While heart rate variability is influenced by both the 
-    sympathetic and parasympathetic nervous systems, because EDA is strongly correlated to 
-    sweat production, its PSD can be used to measure arousal of the sympathetic nervous system 
-    in isolation [1]. The very low frequency (VLF) , low frequency (LF), and high frequency (HF) 
-    passbands are 0.001-0.045 Hz, 0.045-0.15 Hz, and 0.15-0.25 Hz respectively [2]. LF changes in 
-    HRV derive from the influence of the cardiac sympathetic nerves [3], so the same LF passband 
-    was used for IBI and EDA. The PSD was approximated using a periodogram, and the integral 
-    for each passband was calculated using composite trapezoidal integration. 
+    Returns an array containing the very low frequency, low frequency, and high frequency 
+    passbands of the EDA signal. 
+
+    EDA is strongly correlated to sweat production, so its power spectral density (PSD) can be used 
+    to measure arousal of the sympathetic nervous system in isolation [1]. Low frequency (LF) 
+    changes derive from the influence of the cardiac sympathetic nerves [3], so the same LF 
+    passband was used for IBI and EDA. The PSD was approximated using a periodogram, and the 
+    integral for each passband was calculated using composite trapezoidal integration.
 
     [1] 
     Critchley, H. D. (2002). Review: Electrodermal Responses: What Happens in the
@@ -226,13 +237,17 @@ def eda_passbands(signal):
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose frequency passbands are desired.
 
     Returns
     -------
     array-like
-        [vlf_integral,lf_integral,hf_integral]
+        Returns array containing frequency passbands of the signal [vlf_integral, lf_integral, hf_integral]
         
+        vlf_integral - very low frequency, 0.001-0.045 Hz
+        lf_integral - low frequency, 0.045-0.15 Hz
+        hf_integral - high frequency, 0.15-0.25 Hz
+
     """
     fs,pxx = scipy.signal.periodogram(signal, nfft = 1000, scaling = 'density', detrend = 'linear')
 
@@ -247,36 +262,46 @@ def eda_passbands(signal):
 
 def eda_lfhf(signal):
     """
-    Description of module level function. 
+    Returns the ratio of low frequency passbands to high frequency passbands of the EDA signal 
+    (see eda_passbands).
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose ratio between low and high frequency passbands is desired. 
 
     Returns
     -------
-    bool
-        eda_passbands(signal)[1]/eda_passbands(signal)[2]
+    float
+        Returns the ratio of low frequency passbands to high frequency passbands of the signal.
 
     """
     return eda_passbands(signal)[1]/eda_passbands(signal)[2]
 
 def eda_all_feat(signal): #returns all eda features in data frame
     """
-    Description of module level function. 
+    Returns all of the EDA features of the EDA signal in the form of a labeled data frame (mean_firstdiff, std_firstdiff, 
+    mean_seconddiff, std_seconddiff, eda_lfhf, orienting_features).  
 
     Parameters
     ----------
     signal : array-like 
-        The first parameter.
+        Array containing numbers whose EDA features are desired.
 
     Returns
     -------
     DataFrame
-        ['eda_mean1diff', 'eda_std1diff', 'eda_mean2diff', 'eda_std2diff', 'eda_lf/hf', 'eda_num_onsets', 'eda_sum_onsets', 'eda_sum_peaks', 'eda_sum_difference',\
-        'eda_sum_areas', 'eda_sum_od', 'eda_mean_od', 'eda_mean_amp', 'eda_total_amp']
+        Returns a data frame of all the EDA features with the column headings [eda_mean1diff, 
+        eda_std1diff, eda_mean2diff, eda_std2diff, eda_lf/hf, eda_num_onsets, eda_sum_onsets, 
+        eda_sum_peaks, eda_sum_difference, eda_sum_areas, eda_sum_od, eda_mean_od, 
+        eda_mean_amp, eda_total_amp]
 
+        eda_mean1diff - see mean_firstdiff
+        eda_std1diff - see std_firstdiff
+        eda_mean2diff - see mean_seconddiff
+        eda_std2diff - see std_seconddiff
+        eda_lf/hf - see eda_lfhf
+        eda_num_onsets, eda_sum_onsets, ..., eda_total_amp - see orienting features
 
     """
     functions = [mean_firstdiff, std_firstdiff, mean_seconddiff, std_seconddiff, eda_lfhf]

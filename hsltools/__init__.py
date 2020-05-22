@@ -14,7 +14,7 @@ __init__.py				basics.py				ibi.py				eda.py				etc.
 
 	in signalstatistics, the dfa_exp is set to 0 but dfa(signal) is commented out, is this intentional?  
 	in multivar, xcorr_lagtime(signal1, signal2, make_plot = False, sig1 = '', sig2 = ''), should the makeplot just be deleted? 
-
+	are get_shimmer and get_split_shimmer necessary? They seem specific to our data. 
 
 
 """

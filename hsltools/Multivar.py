@@ -16,20 +16,29 @@ from scipy.signal import medfilt,butter
 import corner
 import scipy
 
+"""
+Multivar is a module consisting of features designed to specifically for multivariable analysis of signals.
+
+"""
+
+
 def resample(signal1, signal2):
     """
-    Description of module level function. 
+    Returns a resample of the two signals.  
 
     Parameters
     ----------
     signal1 : array-like
-        The first parameter.
+        Array containing numbers representing the first signal whose resample is desired. 
     signal2 : array-like 
+        Array containing numbers representing the second signal whose resample is desired. 
 
     Returns
     -------
-    placeholder
-        signal1, signal2
+    (array-like, array-like)
+        Returns signal1 resampled.
+        Returns signal2 resampled. 
+    
     """
     ts = np.linspace(0, 1500, 1500)
 
@@ -43,54 +52,56 @@ def resample(signal1, signal2):
 
 def normalize(signal):
     """
-    Description of module level function. 
+    Returns the normalized signal. 
 
     Parameters
     ----------
     signal : array-like 
-        The first parameter.
+        Array containing numbers whose nomalized values are desired.
 
     Returns
     -------
-    placeholder
-        (signal - np.mean(signal)) / np.std(signal)
+    array-like
+        Returns normalized values of the signal. 
+    
     """
    	return (signal - np.mean(signal)) / np.std(signal)
 
 def detrend(signal):
     """
-    Description of module level function. 
+    Returns detrend of the signal. 
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose detrends are desired.
 
     Returns
     -------
-    placeholder
-        signal - np.polyval(line, np.arange(len(signal)))
+    ndarray
+        Returns detrend values of the signal. 
 
     """
     line = np.polyfit(np.arange(len(signal)), signal, 2)
 	return signal - np.polyval(line, np.arange(len(signal)))
 
-def xcorr_lagtime(signal1, signal2, make_plot = False, sig1 = '', sig2 = ''):
+def xcorr_lagtime(signal1, signal2):
    	"""
-    Description of module level function. 
+    Returns xcorr_lagtime.  
 
     Parameters
     ----------
     signal1 : array-like
-        The first parameter.
+        The first signal.
     signal2 : array-like
-        The second parameter.    
+        The second signal.    
 
 
     Returns
     -------
     ndarray of ints
-        tau
+        Returns tau
+    
     """
     signal1, signal2 = resample(signal1, signal2)
     
@@ -102,26 +113,6 @@ def xcorr_lagtime(signal1, signal2, make_plot = False, sig1 = '', sig2 = ''):
     
    	tau = np.argmax(xcorr)
    
-   	if make_plot:
-       	plt.figure(figsize = (12,10))
-       	plt.subplot(211)
-        
-       	plt.plot(X, label = sig1)
-       	plt.plot(Y, label = sig2)
-       	plt.legend()
-       	plt.xlabel('Time (s)')
-       	plt.ylabel('Normalized Signal')
-        
-       	plt.subplot(212)
-        
-       	plt.plot(xcorr, 'k', label = 'Cross-Correlation')
-       	plt.axvline(tau, color = 'k', linestyle = '--')
-       	plt.xlabel('Lag (s)')
-   		plt.ylabel('Coefficient')
-       	plt.legend()
-        
-       	plt.tight_layout()
-   
    	return tau
 	
 def Cxyy(x, y, r, s, N):
@@ -130,7 +121,7 @@ def Cxyy(x, y, r, s, N):
 
     Parameters
     ----------
-    x : ?
+    x : 
         The first parameter.
     y : 
     r : 
@@ -141,6 +132,7 @@ def Cxyy(x, y, r, s, N):
     -------
     placeholder 
         z
+    
     """
     z = 0
    	m = np.max([r, s])
@@ -161,7 +153,7 @@ def xbicorr(x, y):
 
     Returns
     -------
-    placeholder
+    float
         z
     
     """        
@@ -179,24 +171,29 @@ def xbicorr(x, y):
     return z
 
 def multivar_all_feat(signal1, signal2, name): #returns all multivar features in data frame
-   	"""
-    Description of module level function. 
+    """
+    Returns all of the Multivar features of the two signals in the form of a labeled data frame (xcorr_lagtime, xbicorr).  
 
     Parameters
     ----------
     signal1 : array-like
-        The first parameter.
+        Array containing numbers representing the first signal.     
     signal2 : array-like
-    name : 
+        Array containing numbers representing the second signal. 
+    name : string
+        Name representing signals desired for data frame. 
 
     Returns
     -------
     DataFrame
-        [name+'_xcorr_lag', name+'_xbicorr']
+        Returns a data frame of all the Multivar features with the column headings [name_xcorr_lag, name_xbicorr]
+        
+        name_xcorr_lag - see xcorr_lagtime
+        name_xbicorr - see xbicorr
+    
     """
     functions = [xcorr_lagtime, xbicorr]
    	measure_names = [name+'_xcorr_lag', name+'_xbicorr']
    	features = np.asarray([func(signal1, signal2) for func in functions]).reshape(-1,1)
    	fdf = pd.DataFrame(columns = measure_names, data = features.T)
    	return fdf
-

@@ -16,37 +16,47 @@ from scipy.signal import medfilt,butter
 import corner
 import scipy
 
+"""
+IBI is a module consisting of features designed to specifically analyze interbeat interval.
+
+"""
 
 def rmssd(signal):
 	"""
-    Description of module level function. 
+    Returns the Root Mean Square of the Successive Differences (RMSSD) of the IBI signal.  
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose RMSSD is desired.
 
     Returns
     -------
     ndarray
-        np.sqrt(np.mean(np.square(np.diff(signal))))
+        Returns the RMSSD of the signal. 
    
     """
     return np.sqrt(np.mean(np.square(np.diff(signal))))
 
 def ibi_passbands(signal):
 	"""
-    Description of module level function. 
+    Returns an array containing the very low frequency, low frequency, and high frequency 
+    passbands of the IBI signal (see eda.eda_passbands). 
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose frequency passbands are desired.
 
     Returns
     -------
     array-like
-        [vlf_integral,lf_integral,hf_integral]
+        Returns array containing frequency passbands [vlf_integral, lf_integral, hf_integral]
+        
+        vlf_integral - very low frequency, 0.0033-0.04 Hz
+        lf_integral - low frequency, 0.04-0.15 Hz
+        hf_integral - high frequency, 0.15-0.4 Hz
+
     """
     fs,pxx = scipy.signal.periodogram(signal, nfft = 1000, scaling = 'density', detrend = 'constant')
 
@@ -62,34 +72,39 @@ def ibi_passbands(signal):
 
 def ibi_lfhf(signal):
     """
-    Description of module level function. 
+    Returns the ratio of low frequency passbands to high frequency passbands of the IBI signal 
+    (see IBI_passbands).
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose ratio between low and high frequency passbands is desired. 
 
     Returns
     -------
-    placeholder
-        ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
+    float
+        Returns the ratio of low frequency passbands to high frequency passbands of the signal.
 
     """
     return ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
 
 def ibi_all_features(signal): #returns all ibi features in data frame
    	"""
-    Description of module level function. 
+    Returns all of the IBI features of the IBI signal in the form of a labeled data frame (rmssd, ibi_lf/hf).  
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose IBI features are desired.
 
     Returns
     -------
     DataFrame
-        ['ibi_rmssd', 'ibi_lf/hf']
+        Returns a data frame of all the EDA features with the column headings [ibi_rmssd,
+        ibi_lf/hf]
+
+        ibi_rmssd - see rmssd
+        ibi_lf/hf - see ibi_lfhf
 
     """
    	functions = [rmssd, ibi_lfhf]

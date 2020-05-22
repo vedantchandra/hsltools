@@ -18,87 +18,38 @@ import scipy
 
 from hsltools.basics import signal_statistics
 
+"""
+Shimmer is a module consisting of features designed to specifically analyze Shimmer sensors.
 
-shimfiles = glob.glob('shimmerData/*/*')
-
-def get_shimmer(subjno, part, epochno):
-	"""
-    Description of module level function. 
-
-    Parameters
-    ----------
-    subjno : 
-        The first parameter.
-	part : 
-	epochno : 
-
-
-    Returns
-    -------
-    ndarray
-        True if successful, False otherwise.
-    """
-	epoch = num_to_epoch(epochno)
-	if epoch == 'REC':
-    	epoch = 'Rec'
-    elif epoch == 'P1':
-	    epoch = '_P1'
-		elif epoch == 'P2':
-    	epoch = '_P2'
-
-	for file in shimfiles:
-    	if str(subjno) in file and part in file and epoch in file:
-        	data = pd.read_csv(file, header = None)
-	try:
-    	vectors = np.asarray(data[[1,2,3]])
-	except:
-   		print('mising shimmer data. skipping...')
-    	return np.repeat(np.nan, 1000)
-	mean = np.mean(vectors, axis = 0)
-	std = np.std(vectors, axis = 0)
-
-    vectors = (vectors - mean[np.newaxis,:])
-
-	#plt.plot(vectors)
-
-		z_vector = np.linalg.norm(vectors, axis = 1)
-
-	return z_vector
-
-def get_split_shimmer(subjno, part, epochno, splitno):
-    """
-    Description of module level function. 
-
-    Parameters
-    ----------
-    subjno : 
-        The first parameter.
-	part : 
-	epochno : 
-	splitno : 
-
-    Returns
-    -------
-    ndarray
-        True if successful, False otherwise.
-    """
-	z_vector = get_shimmer(subjno,part,epochno)
-
-	return np.array_split(z_vector,n_splits)[splitno]
+"""
 
 def spectrum_statistics(signal):
     """
-    Description of module level function. 
+    Returns an array containing basic statistics of the signal (peak, peak magnitude, integral, 
+    energy, shannon).
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose spectrum statistics are desired.
 
     Returns
     -------
     array-like
-        [peak, peakmag, integral, energy, shannon]
+        Returns array of signal statistics [peak, peakmag, integral, energy, shannon].
+
+        peak - peak frequency of the signal
+        peakmag - peak power of the signal 
+        integral - integral of signal using the composite trapezoidal rule
+        energy - spectral energy of the signal 
+        shannon - The Shannon entropy, or self-information is a quantity that identifies the amount of information 
+        associated with an event using the probabilities of the event. There is an inverse relationship 
+        between probability and information, as low-probability events carry more information [3],[4].
+
+        [3] https://arxiv.org/pdf/1405.2061.pdf
+		[4] https://towardsdatascience.com/the-intuition-behind-shannons-entropy-e74820fe9800
+
+
     """
 	fs,pxx = scipy.signal.periodogram(signal, fs = 50, nfft = 1000, scaling = 'density', detrend = 'constant')
 
@@ -114,17 +65,24 @@ def spectrum_statistics(signal):
 
 def bodyshimmer_features(signal):
 	"""
-    Description of module level function. 
+    Returns signal_statistics and spectrum_statistics of the body signal in the form of a labeled data frame.
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose basic and spectrum statistics are desired.
 
     Returns
     -------
     DataFrame
-        True if successful, False otherwise.
+        Returns a data frame of basic and spectrum statistics with column headings [bodyshim_mean, 
+        bodyshim_std, bodyshim_skewness, bodyshim_kurtosis, bodyshim_maximum, bodyshim_minimum, 
+        bodyshim_iqr, bodyshim_variation, bodyshim_entropy, bodyshim_dfa, bodyshim_peakfreq, 
+        bodyshim_peakpower, bodyshim_powerint, bodyshim_specenergy, bodyshim_shannon]
+		
+		bodyshim_mean, bodyshim_std, ..., bodyshim_skewness - see basics.signal_statistics
+		bodyshim_peakfreq, bodyshim_peakpower, ..., bodyshim_shannon - see spectrum_statistics
+
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
     stat_names = ['bodyshim_mean', 'bodyshim_std', 'bodyshim_skewness', 'bodyshim_kurtosis', 'bodyshim_maximum', 'bodyshim_minimum', 'bodyshim_iqr', 'bodyshim_variation', 'bodyshim_entropy', 'bodyshim_dfa']
@@ -138,17 +96,24 @@ def bodyshimmer_features(signal):
 
 def headshimmer_features(signal):
 	"""
-    Description of module level function. 
+    Returns signal_statistics and spectrum_statistics of the head signal in the form of a labeled data frame.
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose basic and spectrum statistics are desired.
 
     Returns
     -------
     DataFrame
-        True if successful, False otherwise.
+        Returns a data frame of basic and spectrum statistics with column headings [headshim_mean, 
+        headshim_std, headshim_skewness, headshim_kurtosis, headshim_maximum, headshim_minimum, 
+        headshim_iqr, headshim_variation, headshim_entropy, headshim_dfa, headshim_peakfreq, 
+        headshim_peakpower, headshim_powerint, headshim_specenergy, headshim_shannon]
+		
+		headshim_mean, headshim_std, ..., headshim_skewness - see basics.signal_statistics
+		headshim_peakfreq, headshim_peakpower, ..., headshim_shannon - see spectrum_statistics
+
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
     stat_names = ['headshim_mean', 'headshim_std', 'headshim_skewness', 'headshim_kurtosis', 'headshim_maximum', 'headshim_minimum', 'headshim_iqr', 'headshim_variation', 'headshim_entropy', 'headshim_dfa']
@@ -162,17 +127,19 @@ def headshimmer_features(signal):
   
 def hr_features(signal):
     """
-    Description of module level function. 
+    Returns the signal_statistics of the heart rate signal in the form of a labeled data frame. 
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose basic statistics are desired.
 
     Returns
     -------
     DataFrame
-        True if successful, False otherwise.
+        Returns a data frame of basic statistics with column headings [hr_mean, hr_std, hr_skewness, 
+        hr_kurtosis, hr_maximum, hr_minimum, hr_iqr, hr_variation, hr_entropy, hr_dfa].
+
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
     stat_names = ['hr_mean', 'hr_std', 'hr_skewness', 'hr_kurtosis', 'hr_maximum', 'hr_minimum', 'hr_iqr', 'hr_variation', 'hr_entropy', 'hr_dfa']
@@ -181,39 +148,21 @@ def hr_features(signal):
 
 def temp_features(signal):
     """
-    Description of module level function. 
+    Returns the signal_statistics of the temperature signal in the form of a labeled data frame. 
 
     Parameters
     ----------
     signal : array-like
-        The first parameter.
+        Array containing numbers whose basic statistics are desired.
 
     Returns
     -------
     DataFrame
-        True if successful, False otherwise.
+        Returns a data frame of basic statistics with column headings [temp_mean, temp_std, temp_skewness, 
+        temp_kurtosis, temp_maximum, temp_minimum, temp_iqr, temp_variation, temp_entropy, temp_dfa].
+
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
     stat_names = ['temp_mean', 'temp_std', 'temp_skewness', 'temp_kurtosis', 'temp_maximum', 'temp_minimum', 'temp_iqr', 'temp_variation', 'temp_entropy', 'temp_dfa']
     fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
     return fdf
-
-def shimmer_all_features(signal): #returns all shimmer features in data frame 
-	"""
-    Description of module level function. 
-
-    Parameters
-    ----------
-    signal : array-like
-        The first parameter.
-
-    Returns
-    -------
-    DataFrame
-        True if successful, False otherwise.
-    """
-	bdshim_fun = bodyshimmer_features(signal)
-	hdshim_fun = headshimmer_features(signal)
-	hr_fun = hr_features(signal)
-	temp_fun = temp_features(signal)
-	return ((bdshim_fun.join(hdshim_fun)).join(hr_fun)).join(temp_fun)
