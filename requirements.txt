@@ -1,0 +1,6 @@
+sphinxcontrib-bibtex
+pandas
+scipy
+tqdm
+sphinx-autoapi
+scikit-learn
