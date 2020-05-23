@@ -4,16 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from tqdm import tqdm
-from dfa import dfa
+from .dfa import dfa
 import scipy.signal as sig
 from sklearn.linear_model import LogisticRegression
 from scipy.interpolate import interp1d
 from scipy.integrate import romb
 plt.rcParams.update({'font.size': 22})
-from hsl_functions import *
 import glob
 from scipy.signal import medfilt,butter
-import corner
 import scipy
 
 """
@@ -22,7 +20,7 @@ EDA is a module consisting of features designed to specifically analyze electrod
 """
 
 def mean_firstdiff(signal):
-	"""
+    """
     Returns the mean first difference of the EDA signal. 
 
     The first difference in perturbed epochs is expected to be higher in magnitude than those at 
@@ -30,13 +28,13 @@ def mean_firstdiff(signal):
     second differences of the EDA signal can be used to study the manifestation of psychological 
     stress [2].
 
-	[1] 
-	Blain et al., 2008 S. Blain, A. Mihailidis, T. Chau Assessing the potential of electrodermal 
-	activity as an alternative access pathway Medical Engineering & Physics, 30 (4) (2008), 
-	pp. 498-505
-	[2]
-	Liu Y (2018) Du S (2018) Psychological stress level detection based on electrodermal 
-	activity. Behav Brain Res 341:50–53. https://doi.org/10.1016/j.bbr.2017.12.021
+    [1] 
+    Blain et al., 2008 S. Blain, A. Mihailidis, T. Chau Assessing the potential of electrodermal 
+    activity as an alternative access pathway Medical Engineering & Physics, 30 (4) (2008), 
+    pp. 498-505
+    [2]
+    Liu Y (2018) Du S (2018) Psychological stress level detection based on electrodermal 
+    activity. Behav Brain Res 341:50–53. https://doi.org/10.1016/j.bbr.2017.12.021
 
 
     Parameters
@@ -54,7 +52,7 @@ def mean_firstdiff(signal):
     return np.mean(np.abs(np.diff(signal, n=1)))
 
 def std_firstdiff(signal):
-	"""
+    """
     Returns the standard deviation of the EDA signal's first difference (see mean_firstdiff). 
 
     Parameters
@@ -71,10 +69,10 @@ def std_firstdiff(signal):
     return np.std(np.abs(np.diff(signal, n=1)))
 
 def mean_seconddiff(signal):
-	"""
+    """
     Returns the mean second difference of the EDA signal (see mean_firstdiff).
 
-	Parameters
+    Parameters
     ----------
     signal : array-like
         Array containing numbers whose mean second difference is desired. 
@@ -195,17 +193,17 @@ def orienting_features(signal):
         orienting_duration.append(peaks[i]-onsets[i])
     mean_od = np.mean(orienting_duration)
     sum_od = sum(orienting_duration)
-	    
+        
     areas = []
     for i in range(len(peaks)):
         areas.append(0.5*orienting_duration[i]*peaks[i])
-	    
+        
     sum_areas = sum(areas)
-	    
+        
     mean_amplitude = []
     for i in range(len(peaks)):
         mean_amplitude.append((peaks[i]+onsets[i])/2)
-	    
+        
     mean_amp = np.mean(mean_amplitude)
     total_amp = sum(mean_amplitude)
     return [num_onsets, sum_onsets, sum_peaks, sum_difference, sum_areas, sum_od, mean_od, mean_amp, total_amp]
@@ -258,7 +256,7 @@ def eda_passbands(signal):
     vlf_integral = np.trapz(pxx[vlfband],fs[vlfband])
     lf_integral = np.trapz(pxx[lfband],fs[lfband])
     hf_integral = np.trapz(pxx[hfband],fs[hfband])
-	return [vlf_integral,lf_integral,hf_integral]
+    return [vlf_integral,lf_integral,hf_integral]
 
 def eda_lfhf(signal):
     """
@@ -313,5 +311,5 @@ def eda_all_feat(signal): #returns all eda features in data frame
     orient_featurenames = ['eda_num_onsets', 'eda_sum_onsets', 'eda_sum_peaks', 'eda_sum_difference',\
                            'eda_sum_areas', 'eda_sum_od', 'eda_mean_od', 'eda_mean_amp', 'eda_total_amp']
     ofdf = pd.DataFrame(columns = orient_featurenames, data = orient_features.T)
-	    
+        
     return fdf.join(ofdf)

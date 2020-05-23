@@ -22,7 +22,7 @@ IBI is a module consisting of features designed to specifically analyze interbea
 """
 
 def rmssd(signal):
-	"""
+    """
     Returns the Root Mean Square of the Successive Differences (RMSSD) of the IBI signal.  
 
     Parameters
@@ -39,7 +39,7 @@ def rmssd(signal):
     return np.sqrt(np.mean(np.square(np.diff(signal))))
 
 def ibi_passbands(signal):
-	"""
+    """
     Returns an array containing the very low frequency, low frequency, and high frequency 
     passbands of the IBI signal (see eda.eda_passbands). 
 
@@ -89,7 +89,7 @@ def ibi_lfhf(signal):
     return ibi_passbands(signal)[1]/ibi_passbands(signal)[2]
 
 def ibi_all_features(signal): #returns all ibi features in data frame
-   	"""
+    """
     Returns all of the IBI features of the IBI signal in the form of a labeled data frame (rmssd, ibi_lf/hf).  
 
     Parameters
@@ -107,8 +107,8 @@ def ibi_all_features(signal): #returns all ibi features in data frame
         ibi_lf/hf - see ibi_lfhf
 
     """
-   	functions = [rmssd, ibi_lfhf]
-   	measure_names = ['ibi_rmssd', 'ibi_lf/hf']
-   	features = np.asarray([func(signal) for func in functions]).reshape(-1,1)
-   	fdf = pd.DataFrame(columns = measure_names, data = features.T)
-   	return fdf
+    functions = [rmssd, ibi_lfhf]
+    measure_names = ['ibi_rmssd', 'ibi_lf/hf']
+    features = np.asarray([func(signal) for func in functions]).reshape(-1,1)
+    fdf = pd.DataFrame(columns = measure_names, data = features.T)
+    return fdf

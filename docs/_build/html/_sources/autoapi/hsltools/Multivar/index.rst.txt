@@ -1,0 +1,107 @@
+:mod:`hsltools.Multivar`
+========================
+
+.. py:module:: hsltools.Multivar
+
+
+Module Contents
+---------------
+
+
+.. function:: resample(signal1, signal2)
+
+   Returns a resample of the two signals.
+
+   :param signal1: Array containing numbers representing the first signal whose resample is desired.
+   :type signal1: array-like
+   :param signal2: Array containing numbers representing the second signal whose resample is desired.
+   :type signal2: array-like
+
+   :returns: Returns signal1 resampled.
+             Returns signal2 resampled.
+   :rtype: (array-like, array-like)
+
+
+.. function:: normalize(signal)
+
+   Returns the normalized signal.
+
+   :param signal: Array containing numbers whose nomalized values are desired.
+   :type signal: array-like
+
+   :returns: Returns normalized values of the signal.
+   :rtype: array-like
+
+
+.. function:: detrend(signal)
+
+   Returns detrend of the signal.
+
+   :param signal: Array containing numbers whose detrends are desired.
+   :type signal: array-like
+
+   :returns: Returns detrend values of the signal.
+   :rtype: ndarray
+
+
+.. function:: xcorr_lagtime(signal1, signal2, make_plot=False, sig1='', sig2='')
+
+   Returns xcorr_lagtime.
+
+   :param signal1: The first signal.
+   :type signal1: array-like
+   :param signal2: The second signal.
+   :type signal2: array-like
+   :param make_plot = bool: True if a plot is desired, false otherwise.
+   :param sig1: Name of signal1;
+   :type sig1: string
+   :param sig2: Name of signal2;
+   :type sig2: string
+
+   :returns: Returns tau
+   :rtype: ndarray of ints
+
+
+.. function:: Cxyy(x, y, r, s, N)
+
+   Description of module level function.
+
+   :param x: The first parameter.
+   :param y:
+   :param r:
+   :param s:
+   :param N:
+
+   :returns: z
+   :rtype: placeholder
+
+
+.. function:: xbicorr(x, y)
+
+   Description of module level function.
+
+   :param x: The first parameter.
+   :param y:
+
+   :returns: z
+   :rtype: float
+
+
+.. function:: multivar_all_feat(signal1, signal2, name)
+
+   Returns all of the Multivar features of the two signals in the form of a labeled data frame (xcorr_lagtime, xbicorr).
+
+   :param signal1: Array containing numbers representing the first signal.
+   :type signal1: array-like
+   :param signal2: Array containing numbers representing the second signal.
+   :type signal2: array-like
+   :param name: Name representing signals desired for data frame.
+   :type name: string
+
+   :returns: Returns a data frame of all the Multivar features with the column headings [name_xcorr_lag, name_xbicorr]
+
+             name_xcorr_lag - see xcorr_lagtime
+             name_xbicorr - see xbicorr
+   :rtype: DataFrame
+
+

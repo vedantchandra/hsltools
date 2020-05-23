@@ -1,0 +1,64 @@
+:mod:`hsltools.IBI`
+===================
+
+.. py:module:: hsltools.IBI
+
+
+Module Contents
+---------------
+
+
+.. function:: rmssd(signal)
+
+   Returns the Root Mean Square of the Successive Differences (RMSSD) of the IBI signal.
+
+   :param signal: Array containing numbers whose RMSSD is desired.
+   :type signal: array-like
+
+   :returns: Returns the RMSSD of the signal.
+   :rtype: ndarray
+
+
+.. function:: ibi_passbands(signal)
+
+   Returns an array containing the very low frequency, low frequency, and high frequency
+   passbands of the IBI signal (see eda.eda_passbands).
+
+   :param signal: Array containing numbers whose frequency passbands are desired.
+   :type signal: array-like
+
+   :returns: Returns array containing frequency passbands [vlf_integral, lf_integral, hf_integral]
+
+             vlf_integral - very low frequency, 0.0033-0.04 Hz
+             lf_integral - low frequency, 0.04-0.15 Hz
+             hf_integral - high frequency, 0.15-0.4 Hz
+   :rtype: array-like
+
+
+.. function:: ibi_lfhf(signal)
+
+   Returns the ratio of low frequency passbands to high frequency passbands of the IBI signal
+   (see IBI_passbands).
+
+   :param signal: Array containing numbers whose ratio between low and high frequency passbands is desired.
+   :type signal: array-like
+
+   :returns: Returns the ratio of low frequency passbands to high frequency passbands of the signal.
+   :rtype: float
+
+
+.. function:: ibi_all_features(signal)
+
+   Returns all of the IBI features of the IBI signal in the form of a labeled data frame (rmssd, ibi_lf/hf).
+
+   :param signal: Array containing numbers whose IBI features are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of all the EDA features with the column headings [ibi_rmssd,
+             ibi_lf/hf]
+
+             ibi_rmssd - see rmssd
+             ibi_lf/hf - see ibi_lfhf
+   :rtype: DataFrame
+
+

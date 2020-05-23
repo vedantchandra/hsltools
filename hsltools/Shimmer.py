@@ -4,21 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from tqdm import tqdm
-from dfa import dfa
+from .dfa import dfa
 import scipy.signal as sig
 from sklearn.linear_model import LogisticRegression
 from scipy.interpolate import interp1d
 from scipy.integrate import romb
 plt.rcParams.update({'font.size': 22})
-from hsl_functions import *
 import glob
 from scipy.signal import medfilt,butter
-import corner
 import scipy
 import math
-import nolds
 from scipy.integrate import odeint
-from nolitsa import delay
 
 from hsltools.basics import signal_statistics
 
@@ -52,24 +48,24 @@ def spectrum_statistics(signal):
         spectral_centroid - spectral centroid of the signal
 
         [3] https://arxiv.org/pdf/1405.2061.pdf
-		[4] https://towardsdatascience.com/the-intuition-behind-shannons-entropy-e74820fe9800
+        [4] https://towardsdatascience.com/the-intuition-behind-shannons-entropy-e74820fe9800
 
 
     """
-	fs,pxx = scipy.signal.periodogram(signal, fs = 50, nfft = 1000, scaling = 'density', detrend = 'constant')
+    fs,pxx = scipy.signal.periodogram(signal, fs = 50, nfft = 1000, scaling = 'density', detrend = 'constant')
 
     peak = fs[np.argmax(pxx)]
-	peakmag = np.max(pxx)
-	integral = np.trapz(pxx,fs)
-	energy = np.dot(pxx,pxx)
-	shannon = np.sum(pxx*np.log(1/pxx))
+    peakmag = np.max(pxx)
+    integral = np.trapz(pxx,fs)
+    energy = np.dot(pxx,pxx)
+    shannon = np.sum(pxx*np.log(1/pxx))
     normalized_spectrum = pxx / sum(pxx)  
     normalized_frequencies = np.linspace(0, 1, len(pxx))
     spectral_centroid = sum(normalized_frequencies * normalized_spectrum)/sum(normalized_spectrum)
 
-	 	# Add wavelet analysis
+        # Add wavelet analysis
 
-	return [peak, peakmag, integral, energy, shannon, spectral_centroid]
+    return [peak, peakmag, integral, energy, shannon, spectral_centroid]
 
 def max_dists(signal, m):
     """
@@ -256,64 +252,64 @@ def multiscale_entropy(signal):
         mses.append(sample_entropy(coarse_grain))
     return np.mean(mses)
 
-def fnn(signal, tau = None, max_m = 10):
-    """
-    Returns the fnn of the signal. (***Unsure what this does, so it is not included in shimmer_all_features***)
+# def fnn(signal, tau = None, max_m = 10):
+#     """
+#     Returns the fnn of the signal. (***Unsure what this does, so it is not included in shimmer_all_features***)
 
-    Parameters
-    ----------
-    signal : array-like
-        Array containing numbers whose fnns are desired.
-    tau : array-like
-        Tau, default None
-    max_m : int
-        Maximum number of rows. 
+#     Parameters
+#     ----------
+#     signal : array-like
+#         Array containing numbers whose fnns are desired.
+#     tau : array-like
+#         Tau, default None
+#     max_m : int
+#         Maximum number of rows. 
 
-    Returns
-    -------
-    array-like
-        Returns the fnns.  
+#     Returns
+#     -------
+#     array-like
+#         Returns the fnns.  
    
-    """
-    fnns = [];
-    if tau is None:
-        tau = np.argmax(delay.acorr(signal) < 1 / np.e)
+#     """
+#     fnns = [];
+#     if tau is None:
+#         tau = np.argmax(delay.acorr(signal) < 1 / np.e)
 
-    for m in tqdm(range(1,max_m + 1)):
+#     for m in tqdm(range(1,max_m + 1)):
 
-        N2 = len(signal) - tau*(m-1);
-        xe = [];
-        for mi in np.arange(m):
-            xe.append(signal[(np.arange(N2) + tau * (mi-1))]);
-        Rtol = 15;
-        falsecount = 0;
-        xe = np.asarray(xe).T
-        for i in np.arange(len(xe[:,0])-1): #check minus 1
-            Rdmin = 1000;
-            for j in np.arange(len(xe[:,0])-1):
+#         N2 = len(signal) - tau*(m-1);
+#         xe = [];
+#         for mi in np.arange(m):
+#             xe.append(signal[(np.arange(N2) + tau * (mi-1))]);
+#         Rtol = 15;
+#         falsecount = 0;
+#         xe = np.asarray(xe).T
+#         for i in np.arange(len(xe[:,0])-1): #check minus 1
+#             Rdmin = 1000;
+#             for j in np.arange(len(xe[:,0])-1):
 
-                Rd = scipy.linalg.norm(xe[i,:]-xe[j,:]);
+#                 Rd = scipy.linalg.norm(xe[i,:]-xe[j,:]);
 
-                if j == i:
-                    continue;
-                elif Rd < Rdmin:
-                    idx = j;
-                    Rdmin = Rd;
-            j = idx;
-            Rdnext =  scipy.linalg.norm(xe[i+1,:]-xe[j+1,:]);
-            Rd = scipy.linalg.norm(xe[i,:]-xe[j,:]);
-            if Rd == 0:
-                continue
-            R = Rdnext/Rd;
-            if R > Rtol:
-                falsecount = falsecount + 1;    
-        fnnprop = falsecount/len(xe[:,0]);
-        fnns.append(fnnprop)
+#                 if j == i:
+#                     continue;
+#                 elif Rd < Rdmin:
+#                     idx = j;
+#                     Rdmin = Rd;
+#             j = idx;
+#             Rdnext =  scipy.linalg.norm(xe[i+1,:]-xe[j+1,:]);
+#             Rd = scipy.linalg.norm(xe[i,:]-xe[j,:]);
+#             if Rd == 0:
+#                 continue
+#             R = Rdnext/Rd;
+#             if R > Rtol:
+#                 falsecount = falsecount + 1;    
+#         fnnprop = falsecount/len(xe[:,0]);
+#         fnns.append(fnnprop)
 
-        if fnnprop < 0.005:
-            break
+#         if fnnprop < 0.005:
+#             break
     
-    return fnns
+#     return fnns
 
 def spectral_flux(signal, nsplits):
     """
@@ -418,7 +414,7 @@ def flux_stats(signal):
 
 
 def bodyshimmer_features(signal):
-	"""
+    """
     Returns basics.signal_statistics and spectrum_statistics of the body signal in the form of a labeled data frame.
 
     Parameters
@@ -433,9 +429,9 @@ def bodyshimmer_features(signal):
         bodyshim_std, bodyshim_skewness, bodyshim_kurtosis, bodyshim_maximum, bodyshim_minimum, 
         bodyshim_iqr, bodyshim_variation, bodyshim_entropy, bodyshim_corrtime, bodyshim_peakfreq, 
         bodyshim_peakpower, bodyshim_powerint, bodyshim_specenergy, bodyshim_shannon, bodyshim_spectral_centroid]
-		
-		bodyshim_mean, bodyshim_std, ..., bodyshim_skewness - see basics.signal_statistics
-		bodyshim_peakfreq, bodyshim_peakpower, ..., bodyshim_spectral_centroid - see spectrum_statistics
+        
+        bodyshim_mean, bodyshim_std, ..., bodyshim_skewness - see basics.signal_statistics
+        bodyshim_peakfreq, bodyshim_peakpower, ..., bodyshim_spectral_centroid - see spectrum_statistics
 
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
@@ -449,7 +445,7 @@ def bodyshimmer_features(signal):
     return fdf.join(spec_fdf)
 
 def headshimmer_features(signal):
-	"""
+    """
     Returns basics.signal_statistics and spectrum_statistics of the head signal in the form of a labeled data frame.
 
     Parameters
@@ -464,9 +460,9 @@ def headshimmer_features(signal):
         headshim_std, headshim_skewness, headshim_kurtosis, headshim_maximum, headshim_minimum, 
         headshim_iqr, headshim_variation, headshim_entropy, headshim_corrtime, headshim_peakfreq, 
         headshim_peakpower, headshim_powerint, headshim_specenergy, headshim_shannon, headshim_spectral_centroid]
-		
-		headshim_mean, headshim_std, ..., headshim_skewness - see basics.signal_statistics
-		headshim_peakfreq, headshim_peakpower, ..., headshim_spectral_centroid - see spectrum_statistics
+        
+        headshim_mean, headshim_std, ..., headshim_skewness - see basics.signal_statistics
+        headshim_peakfreq, headshim_peakpower, ..., headshim_spectral_centroid - see spectrum_statistics
 
     """
     shim_stats = signal_statistics(signal).reshape(-1,1)
@@ -498,7 +494,7 @@ def hr_features(signal):
     shim_stats = signal_statistics(signal).reshape(-1,1)
     stat_names = ['hr_mean', 'hr_std', 'hr_skewness', 'hr_kurtosis', 'hr_maximum', 'hr_minimum', 'hr_iqr', 'hr_variation', 'hr_entropy', 'hr_corrtime']
     fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
-    return fdf	
+    return fdf  
 
 def temp_features(signal):
     """

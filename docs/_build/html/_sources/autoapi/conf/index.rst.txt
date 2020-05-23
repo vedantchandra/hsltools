@@ -1,0 +1,64 @@
+:mod:`conf`
+===========
+
+.. py:module:: conf
+
+
+Module Contents
+---------------
+
+.. data:: project
+   :annotation: = hsltools
+
+   
+
+.. data:: copyright
+   :annotation: = 2020, Rebecca Mosier, Vedant Chandra, Aparajita Kashyap, Jessica Nguyen, Serena Tang, Wyatt Kilburn, Mark Shelhamer
+
+   
+
+.. data:: author
+   :annotation: = Rebecca Mosier, Vedant Chandra, Aparajita Kashyap, Jessica Nguyen, Serena Tang, Wyatt Kilburn, Mark Shelhamer
+
+   
+
+.. data:: release
+   :annotation: = 0.1
+
+   
+
+.. data:: extensions
+   :annotation: = ['sphinx_rtd_theme', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinxcontrib.bibtex', 'autoapi.extension']
+
+   
+
+.. data:: autoapi_dirs
+   
+
+   
+
+.. data:: templates_path
+   :annotation: = ['_templates']
+
+   
+
+.. data:: exclude_patterns
+   :annotation: = ['_build', 'Thumbs.db', '.DS_Store']
+
+   
+
+.. data:: html_theme
+   :annotation: = sphinx_rtd_theme
+
+   
+
+.. data:: html_static_path
+   :annotation: = ['_static']
+
+   
+
+.. data:: master_doc
+   :annotation: = index
+
+   
+

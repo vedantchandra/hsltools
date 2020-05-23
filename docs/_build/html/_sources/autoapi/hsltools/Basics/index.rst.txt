@@ -1,0 +1,59 @@
+:mod:`hsltools.Basics`
+======================
+
+.. py:module:: hsltools.Basics
+
+
+Module Contents
+---------------
+
+
+.. function:: signal_statistics(signal)
+
+   Returns an array containing basic statistics of the signal (mean, standard deviation, skewness,
+   kurtosis, maximum, minimum, interquartile range, variation, entropy, scaled correlation time).
+
+   :param signal: Array containing numbers whose basic statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns array of basic statistics [mean, std, skewness, kurtosis, maximum, minimum, iqr,
+             variation, entropy, corrtime].
+
+             mean - mean of the signal
+             std - standard deviation of the signal
+             skewness - imbalance and asymmetry from the mean computed as the Fisher-Pearson coefficient of skewness
+             kurtosis - sharpness of the peak of a frequency-distribution curve
+             maximum - maximum value of the signal
+             minimum - minimum value of the signal
+             iqr - interquartile range, statistical dispersion as the diffrence betwen the upper and lower quartiles
+             variation - ratio of the biased standard deviation to the mean
+             entropy - measure of uncertainty using Shannon entropy
+             corrtime - see scaled_correlation_time
+   :rtype: ndarray
+
+
+.. function:: ss_dataframe(signal)
+
+   Returns signal_statistics of the signal in the form of a labeled data frame.
+
+   :param signal: Array containing numbers whose basic statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of basic statistics with column headings [mean, std, skewness, kurtosis,
+             maximum, minimum, iqr, variation, entropy, corrtime] (see signal_statistics).
+   :rtype: DataFrame
+
+
+.. function:: scaled_correlation_time(signal1, signal2)
+
+   Returns the scaled correlation time of the signal.
+
+   :param signal1: Array containing numbers whose correlation time is desired.
+   :type signal1: array-like
+   :param signal2: Array containing numbers whose correlation time is desired.
+   :type signal2: array-like
+
+   :returns: Returns the scaled correlation time of the signals.
+   :rtype: ndarray of ints
+
+

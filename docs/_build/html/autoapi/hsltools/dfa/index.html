@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hsltools.dfa &mdash; hsltools 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> hsltools
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic.html">Basic Statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../eda.html">Electrodermal Activity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../hr.html">Heart Rate Variability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../acc.html">Accelerometer Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../multi.html">Multivariate Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">hsltools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">hsltools.dfa</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/autoapi/hsltools/dfa/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-hsltools.dfa">
+<span id="hsltools-dfa"></span><h1><a class="reference internal" href="#module-hsltools.dfa" title="hsltools.dfa"><code class="xref py py-mod docutils literal notranslate"><span class="pre">hsltools.dfa</span></code></a><a class="headerlink" href="#module-hsltools.dfa" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="hsltools.dfa.calc_rms">
+<code class="sig-prename descclassname">hsltools.dfa.</code><code class="sig-name descname">calc_rms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">scale</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hsltools.dfa.calc_rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>windowed Root Mean Square (RMS) with linear detrending.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><em>x</em><span class="classifier">numpy.array</span></dt><dd><p>one dimensional data vector</p>
+</dd>
+<dt><em>scale</em><span class="classifier">int</span></dt><dd><p>length of the window in which RMS will be calculaed</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt><em>rms</em><span class="classifier">numpy.array</span></dt><dd><p>RMS data in each window with length len(x)//scale</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="hsltools.dfa.dfa">
+<code class="sig-prename descclassname">hsltools.dfa.</code><code class="sig-name descname">dfa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">scale_lim</span><span class="o">=</span><span class="default_value">[5, 9]</span></em>, <em class="sig-param"><span class="n">scale_dens</span><span class="o">=</span><span class="default_value">0.25</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#hsltools.dfa.dfa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detrended Fluctuation Analysis - measures power law scaling coefficient
+of the given signal <em>x</em>.
+More details about the algorithm you can find e.g. here:
+Hardstone, R. et al. Detrended fluctuation analysis: A scale-free
+view on neuronal oscillations, (2012).
+Args:
+—–</p>
+<blockquote>
+<div><dl class="simple">
+<dt><em>x</em><span class="classifier">numpy.array</span></dt><dd><p>one dimensional data vector</p>
+</dd>
+<dt><em>scale_lim</em> = [5,9]<span class="classifier">list of length 2</span></dt><dd><p>boundaries of the scale, where scale means windows among which RMS
+is calculated. Numbers from list are exponents of 2 to the power
+of X, eg. [5,9] is in fact [2**5, 2**9].
+You can think of it that if your signal is sampled with F_s = 128 Hz,
+then the lowest considered scale would be 2**5/128 = 32/128 = 0.25,
+so 250 ms.</p>
+</dd>
+<dt><em>scale_dens</em> = 0.25<span class="classifier">float</span></dt><dd><p>density of scale divisions, eg. for 0.25 we get 2**[5, 5.25, 5.5, … ]</p>
+</dd>
+<dt><em>show</em> = False</dt><dd><p>if True it shows matplotlib log-log plot.</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt><em>scales</em><span class="classifier">numpy.array</span></dt><dd><p>vector of scales (x axis)</p>
+</dd>
+<dt><em>fluct</em><span class="classifier">numpy.array</span></dt><dd><p>fluctuation function values (y axis)</p>
+</dd>
+<dt><em>alpha</em><span class="classifier">float</span></dt><dd><p>estimation of DFA exponent</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt id="hsltools.dfa.n">
+<code class="sig-prename descclassname">hsltools.dfa.</code><code class="sig-name descname">n</code><em class="property"> = 1000</em><a class="headerlink" href="#hsltools.dfa.n" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Rebecca Mosier, Vedant Chandra, Aparajita Kashyap, Jessica Nguyen, Serena Tang, Wyatt Kilburn, Mark Shelhamer
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

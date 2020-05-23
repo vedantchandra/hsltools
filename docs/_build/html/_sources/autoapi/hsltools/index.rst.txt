@@ -1,0 +1,31 @@
+:mod:`hsltools`
+===============
+
+.. py:module:: hsltools
+
+.. autoapi-nested-parse::
+
+   Outline of package
+
+                                                                   Package hsltools
+
+   __init__.py                             basics.py                               ibi.py                          eda.py                          etc.
+                                                           basic funcs                             specialized                     specialized
+                                                                                                           run all                         run all
+
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Basics/index.rst
+   EDA/index.rst
+   IBI/index.rst
+   Multivar/index.rst
+   Shimmer/index.rst
+   dfa/index.rst
+
+

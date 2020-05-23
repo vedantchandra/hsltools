@@ -1,0 +1,72 @@
+:mod:`test`
+===========
+
+.. py:module:: test
+
+
+Module Contents
+---------------
+
+
+.. data:: n_splits
+   :annotation: = 10
+
+   
+
+.. function:: num_to_epoch(epoch_number)
+
+
+.. function:: num_to_subject(subject_number)
+
+
+.. function:: get_signal(measure, epoch, subjno)
+
+
+.. function:: get_split_signal(measure, epoch, subjno, splitno)
+
+
+.. function:: full_signal(measure, subjno)
+
+
+.. function:: is_perturbed(epoch)
+
+
+.. function:: scaled_correlation_time(signal1, signal2)
+
+
+.. function:: correlation_integral(signal1, signal2)
+
+
+.. function:: plot_full_experiment(measure, subjno)
+
+
+.. data:: df
+   
+
+   
+
+.. data:: all_subjects
+   
+
+   
+
+.. data:: font
+   
+
+   
+
+.. data:: ibi_signal
+   
+
+   
+
+.. data:: testBasics
+   
+
+   
+
+.. data:: ibi_df
+   
+
+   
+

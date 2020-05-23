@@ -1,0 +1,282 @@
+:mod:`hsltools.Shimmer`
+=======================
+
+.. py:module:: hsltools.Shimmer
+
+
+Module Contents
+---------------
+
+
+.. function:: spectrum_statistics(signal)
+
+   Returns an array containing basic statistics of the signal (peak, peak magnitude, integral,
+   energy, shannon, spectral centroid).
+
+   :param signal: Array containing numbers whose spectrum statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns array of spectrum statistics [peak, peakmag, integral, energy, shannon, spectral_centroid].
+
+             peak - peak frequency of the signal
+             peakmag - peak power of the signal
+             integral - integral of signal using the composite trapezoidal rule
+             energy - spectral energy of the signal
+             shannon - The Shannon entropy, or self-information is a quantity that identifies the amount of information
+             associated with an event using the probabilities of the event. There is an inverse relationship
+             between probability and information, as low-probability events carry more information [3],[4].
+             spectral_centroid - spectral centroid of the signal
+
+             [3] https://arxiv.org/pdf/1405.2061.pdf
+             [4] https://towardsdatascience.com/the-intuition-behind-shannons-entropy-e74820fe9800
+   :rtype: array-like
+
+
+.. function:: max_dists(signal, m)
+
+   Returns the maximum Chebyshev distances of the signal.
+
+   :param signal: Array containing numbers whose maximum distances are desired.
+   :type signal: array-like
+   :param m: A positive integer that indicates the length of each vector.
+   :type m: int
+
+   :returns: Returns the maximum Chebyshev distances, type double, of the signal.
+   :rtype: array-like
+
+
+.. function:: approx_entropy(signal)
+
+   Returns the approximate entropy of the signal.
+
+   Approximate entropy (ApEn) is a method for determining system complexity of biological signals
+   [7]. ApEn is based on the sequence recurrence of the data. ApEn quantifies the unpredictability
+   of fluctuations in a time-domain dataset. The minimum value for ApEn is 0, indicating a
+   completely predictable dataset [8]. The algorithm for ApEn [9] relies on two parameters: m (see
+   max_dists) and r, a positive real number that indicates a “scaling range,” or level of filtering. In
+   this case, m = 2 and r = 0.25 [2].
+
+   [2]
+   Lee, C.-H.; Sun, T.-L.; Jiang, B.C.; Choi, V.H. Using Wearable Accelerometers in a
+   Community Service Context to Categorize Falling Behavior. Entropy 2016, 18, 257.
+   [7]
+   Pincus, S. Approximate entropy (apen) as a complexity measure. Chaos: An
+   Interdisciplinary Journal of Nonlinear Science 5, 110–117 (1995).
+   [8]
+   G. M. Lee, S. Fattinger, A. L. Mouthon, Q. Noirhomme, and R. Huber,
+   “Electroencephalogram approximate entropy influenced by both age and sleep,” Front.
+   Neuroinf. 7, 33 (2013). https://doi.org/10.3389/fninf.2013.00033
+   [9]
+   Pincus SM. Approximate entropy as a measure of system complexity. Proc Natl Acad Sci
+   U S A. 1991;88(6):2297–2301. doi:10.1073/pnas.88.6.2297
+
+   :param signal: Array containing numbers whose approximate entropy is desired.
+   :type signal: array-like
+
+   :returns: Returns the approximate entropy of the signal.
+   :rtype: float
+
+
+.. function:: sample_entropy(signal)
+
+   Returns the sample entropy of the signal.
+
+   Sample entropy (SampEn) is an entropy measure that quantifies regularity and complexity.
+   SampEn is the negative natural logarithm of the probability that two uniform, random vectors of
+   m+1 consecutive data points have distance r given that the corresponding vectors of length m
+   have a distance less than or equal to r [11]. SampEn has been used with center of pressure
+   (COP) time series [10], heart rate, and other biological data series. SampEn addresses the bias
+   of approximate entropy, which increases asymptotically as N (the number of data points)
+   increases [12]. SampEn can measure postural control in the assessment of sensory integration
+   and vestibular function [11]. The algorithm relies on parameters m and r (see approx_entropy),
+   in this case, m = 4 and r = 0.3 [10].
+
+   [10]
+   Montesinos, L., Castaldo, R. & Pecchia, L. On the use of approximate entropy and
+   sample entropy with centre of pressure time-series. J NeuroEngineering Rehabil 15, 116
+   (2018). https://doi.org/10.1186/s12984-018-0465-9
+   [11]
+   Lubetzky AV, Harel D, Lubetzky E (2018) On the effects of signal processing on sample
+   entropy for postural control. PLoS ONE 13(3): e0193460.
+   https://doi.org/10.1371/journal.pone.0193460
+   [12]
+   Delgado-Bonal A, Marshak A. Approximate Entropy and Sample Entropy: A
+   Comprehensive Tutorial. Entropy. 2019; 21(6):541.
+
+   :param signal: Array containing numbers whose sample entropy is desired.
+   :type signal: array-like
+
+   :returns: Returns the sample entropy of the signal.
+   :rtype: float
+
+
+.. function:: multiscale_entropy(signal)
+
+   Returns the mean multiscale entropy of the signal.
+
+   Multiscale entropy (MSE) uses the same algorithm as sample entropy (see sample_entropy)
+   [12], and has been used to measure human postural signals [13], but further breaks down the
+   data by introducing another parameter. MSE collects every nth data point and then collects the
+   SampEn from that smaller dataset. This procedure is repeated for several values of n, ranging
+   from 2 to 20. From this series of sample entropies, the mean, standard deviation, and integral
+   are collected. MSE allows for the assessment of variability and fluctuations over a range of time
+   scales, meaning that the temporal dynamics of several different network structures can be
+   measured [14].
+
+   [12]
+   Delgado-Bonal A, Marshak A. Approximate Entropy and Sample Entropy: A
+   Comprehensive Tutorial. Entropy. 2019; 21(6):541.
+   [13]
+   S. Lu, J. Shieh and C. Hansen, "Applied a Multi-scale Entropy Algorithm to Analyze
+   Dynamic COP Signal via Accelerometer Sensor," 2016 Intl IEEE Conferences on
+   Ubiquitous Intelligence & Computing, Advanced and Trusted Computing, Scalable
+   Computing and Communications, Cloud and Big Data Computing, Internet of People,
+   and Smart World Congress (UIC/ATC/ScalCom/CBDCom/IoP/SmartWorld), Toulouse,
+   2016, pp. 127-132.
+   [14]
+   Gao J, Hu J, Liu F and Cao Y (2015) Multiscale entropy analysis of biological signals: a
+   fundamental bi-scaling law. Front. Comput. Neurosci. 9:64. doi:
+   10.3389/fncom.2015.00064
+
+   :param signal: Array containing numbers whose mean multiscale entropy is desired.
+   :type signal: array-like
+
+   :returns: Returns the mean multiscale entropy of the signal.
+   :rtype: ndarray
+
+
+.. function:: spectral_flux(signal, nsplits)
+
+   Returns the means and standard deviations of the spectral flux for the signal.
+
+   Spectral flux is a “low-uncertainty” feature, meaning that it is not highly impacted by suboptimal
+   calibration or placement of the sensing device [1]. It measures how quickly the power spectral
+   changes between two adjacent windows, and was calculated using the squared difference
+   between the normalized magnitudes of these spectra within the windows [2].
+
+   [1]
+   Dargie, Waltenegus. (2009). Analysis of Time and Frequency Domain Features of
+   Accelerometer Measurements. Proceedings - International Conference on Computer
+   Communications and Networks, ICCCN. 1 - 6. 10.1109/ICCCN.2009.5235366.
+   [2]
+   B. Boashash, "Detection classification and estimation in the (t-f) domain" in
+   Time-Frequency Signal Analysis and Processing: A Comprehensive Reference, London,
+   U.K.:Elsevier, pp. 693-743, 2016.
+
+   :param signal: Array containing numbers whose spectral flux means and standard deviations are desired.
+   :type signal: array-like
+   :param nsplits: Number of splits of the signal.
+   :type nsplits: int
+
+   :returns: Returns array of spectral flux features [means, stds]
+
+             means - mean of the spectral flux values for each signal with window sizes ranging from 2 to 500
+             stds - standard deviation of the spectral flux values for each signal with window sizes ranging from 2 to 500
+   :rtype: array-like
+
+
+.. function:: flux_stats(signal)
+
+   Returns statistics extracted from the spectral flux (see spectral_flux) of the signal (maximum,
+   minimum, integral, max inflection point, min inflection point, slope, intercept, r value)
+
+   :param signal: Array containing numbers whose spectral flux statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns array of spectral flux statistics including the linear regression [maximum, minimum,
+             integral, inflection_pt_max, inflection_pt_min, slope, intercept, rval]
+   :rtype: array-like
+
+       maximum - maximum of the spectral_flux means
+       minimum - minimum of the spectral_flux means
+       integral - integral of the spectral_flux means using the trapezoidal integration method
+       inflection_pt_max - maximum inflection point after a smoothing Savitzky-Golay filter was applied
+       inflection_pt_min - minimum inflection point after a smoothing Savitzky-Golay filter was applied
+       slope - slope of spectral_flux means after a smoothing Savitzky-Golay filter was applied
+       intercept - intercept of spectral_flux means after a smoothing Savitzky-Golay filter was applied
+       rval - r value of spectral_flux means after a smoothing Savitzky-Golay filter was applied
+
+
+.. function:: bodyshimmer_features(signal)
+
+   Returns basics.signal_statistics and spectrum_statistics of the body signal in the form of a labeled data frame.
+
+   :param signal: Array containing numbers whose basic and spectrum statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of basic and spectrum statistics with column headings [bodyshim_mean,
+             bodyshim_std, bodyshim_skewness, bodyshim_kurtosis, bodyshim_maximum, bodyshim_minimum,
+             bodyshim_iqr, bodyshim_variation, bodyshim_entropy, bodyshim_corrtime, bodyshim_peakfreq,
+             bodyshim_peakpower, bodyshim_powerint, bodyshim_specenergy, bodyshim_shannon, bodyshim_spectral_centroid]
+
+             bodyshim_mean, bodyshim_std, ..., bodyshim_skewness - see basics.signal_statistics
+             bodyshim_peakfreq, bodyshim_peakpower, ..., bodyshim_spectral_centroid - see spectrum_statistics
+   :rtype: DataFrame
+
+
+.. function:: headshimmer_features(signal)
+
+   Returns basics.signal_statistics and spectrum_statistics of the head signal in the form of a labeled data frame.
+
+   :param signal: Array containing numbers whose basic and spectrum statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of basic and spectrum statistics with column headings [headshim_mean,
+             headshim_std, headshim_skewness, headshim_kurtosis, headshim_maximum, headshim_minimum,
+             headshim_iqr, headshim_variation, headshim_entropy, headshim_corrtime, headshim_peakfreq,
+             headshim_peakpower, headshim_powerint, headshim_specenergy, headshim_shannon, headshim_spectral_centroid]
+
+             headshim_mean, headshim_std, ..., headshim_skewness - see basics.signal_statistics
+             headshim_peakfreq, headshim_peakpower, ..., headshim_spectral_centroid - see spectrum_statistics
+   :rtype: DataFrame
+
+
+.. function:: hr_features(signal)
+
+   Returns the basics.signal_statistics of the heart rate signal in the form of a labeled data frame.
+
+   :param signal: Array containing numbers whose basic statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of basic statistics with column headings [hr_mean, hr_std, hr_skewness,
+             hr_kurtosis, hr_maximum, hr_minimum, hr_iqr, hr_variation, hr_entropy, hr_corrtime].
+   :rtype: DataFrame
+
+
+.. function:: temp_features(signal)
+
+   Returns the basics.signal_statistics of the temperature signal in the form of a labeled data frame.
+
+   :param signal: Array containing numbers whose basic statistics are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of basic statistics with column headings [temp_mean, temp_std, temp_skewness,
+             temp_kurtosis, temp_maximum, temp_minimum, temp_iqr, temp_variation, temp_entropy, temp_corrtime].
+   :rtype: DataFrame
+
+
+.. function:: shimmer_all_features(signal)
+
+   Returns all of the Shimmer features of the signal in the form of a labeled data frame
+   (basics.signal_statistics, spectrum_statistics, flux_stats, approx_entropy, sample_entropy,
+   multiscale_entropy).
+
+   :param signal: Array containing numbers whose Shimmer features are desired.
+   :type signal: array-like
+
+   :returns: Returns a data frame of all the Shimmer features with the column headings [shim_mean,
+             shim_std, shim_skewness, shim_kurtosis, shim_maximum, shim_minimum, shim_iqr,
+             shim_variation, shim_entropy, shim_corrtime, shim_peakfreq, shim_peakpower, shim_powerint,
+             shim_specenergy, shim_shannon, shim_spectral_centroid, flux_maximum, flux_minimum,
+             flux_integral, flux_inflection_pt_max, flux_inflection_pt_min, flux_slope, flux_intercept, flux_rval,
+             approx_entropy, sample_entropy, multiscale_entropy]
+
+             shim_mean, shim_std, ..., shim_corrtime - see signal_statistics
+             shim_peakfreq, shim_peakpower, ..., shim_spectral_centroid - see spectrum_statistics
+             flux_maximum, flux_minimum, ..., flux_rval - see flux_stats
+             approx_entropy - see approx_entropy
+             sample_entropy - see sample_entropy
+             multiscale_entropy - see multiscale_entropy
+   :rtype: DataFrame
+
+
