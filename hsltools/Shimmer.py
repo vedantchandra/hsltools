@@ -522,7 +522,7 @@ def shimmer_all_features(signal):
     """
     Returns all of the Shimmer features of the signal in the form of a labeled data frame 
     (basics.signal_statistics, spectrum_statistics, flux_stats, approx_entropy, sample_entropy, 
-    multiscale_entropy).  
+    multiscale_entropy, fractal_dim).  
 
     Parameters
     ----------
@@ -537,7 +537,8 @@ def shimmer_all_features(signal):
         shim_variation, shim_entropy, shim_corrtime, shim_peakfreq, shim_peakpower, shim_powerint, 
         shim_specenergy, shim_shannon, shim_spectral_centroid, flux_maximum, flux_minimum, 
         flux_integral, flux_inflection_pt_max, flux_inflection_pt_min, flux_slope, flux_intercept, flux_rval, 
-        approx_entropy, sample_entropy, multiscale_entropy]
+        approx_entropy, sample_entropy, multiscale_entropy, beta, H, fractal_dim, d1_time_int, d10_time_int, 
+        diff_time, d1_fft_int, d10_fft_int, diff_fft]
 
         shim_mean, shim_std, ..., shim_corrtime - see signal_statistics
         shim_peakfreq, shim_peakpower, ..., shim_spectral_centroid - see spectrum_statistics
@@ -545,6 +546,7 @@ def shimmer_all_features(signal):
         approx_entropy - see approx_entropy
         sample_entropy - see sample_entropy
         multiscale_entropy - see multiscale_entropy
+        beta, H, ... diff_fft - see fractal_dim
 
     """    
     shim_stats = signal_statistics(signal).reshape(-1,1)
@@ -564,4 +566,101 @@ def shimmer_all_features(signal):
     features = np.asarray([func(signal) for func in functions]).reshape(-1,1)
     entropy_fdf = pd.DataFrame(columns = measure_names, data = features.T)
 
-    return ((fdf.join(spec_fdf)).join(flux_fdf)).join(entropy_fdf)
+    dwt_stats = np.asarray(fractal_dim(signal)).reshape(-1,1)
+    dwtstat_names = ['beta', 'H', 'fractal_dim', 'd1_time_int', 'd10_time_int', 'diff_time', 'd1_fft_int', 'd10_fft_int', 'diff_fft']
+    dwt_fdf = pd.DataFrame(columns = dwtstat_names, data = dwt_stats.T)
+
+    return (((fdf.join(spec_fdf)).join(flux_fdf)).join(entropy_fdf)).join(dwt_fdf)
+
+def fractal_dim(signal):
+    """
+    Returns features of the signal using wavelet-based fractal estimation (spectral index, Hurst 
+    exponent, fractal dimension, wavelet function integrals, fourier transform integrals)
+        
+    Discrete Wavelet Transform (DWT) takes into account both the time domain and frequency 
+    domain of a signal [1]. DWT can analyze specific EEG, ECG, and EMG signals as well as 
+    general movement from accelerometer data [2]. The integrals of the wavelet function and its 
+    fourier transform can also be used to measure approximations of the energy in the signal [4]. 
+
+    [1]
+    Dora M. Ballesteros, Andres E. Gaona2 and Luis F. Pedraza, "Discrete Wavelet 
+    Transform in Compression and Filtering of Biomedical Signals", ISBN: 
+    978-953-307-654-6.
+    [2]
+    Discrimination of Walking Patterns Using Wavelet-Based Fractal Analysis Masaki 
+    Sekine, Associate Member, IEEE, Toshiyo Tamura, Member, IEEE, Metin Akay, Senior 
+    Member, IEEE, Toshiro Fujimoto, Tatsuo Togawa, Senior Member, IEEE, and Yasuhiro 
+    Fukui, Member, IEEE
+    [4]
+    Błażejewski, A., Głowiński, S., & Maciejewski, I. (2019). The wavelet transfer function of 
+    a human body–seat system. Journal of Low Frequency Noise, Vibration and Active 
+    Control, 38(2), 817–825. https://doi.org/10.1177/1461348417747180
+
+    
+    Parameters
+    ----------
+    signal : array-like
+        Array containing numbers whose fractal dimension is desired.
+
+    Returns
+    -------
+    array-like
+        Returns an array of fractal dimension statistics [beta, H, fractal_dim, d1_time_int, d10_time_int, 
+        diff_time, d1_fft_int, d10_fft_int, diff_fft].
+        
+        A DWT decomposes a signal into a detailed signal, d_2j, and an approximate signal, a_2j. The 
+        parameter j controls the dilation and compression of the scaling functions: j=0 results in an 
+        approximate signal roughly equal to the original signal, and the function loses resolution as j 
+        increases [2]. 
+
+        beta - spectral index, calculated from relation that the variance of d_2j is inversely proportional to (2^j)^β
+        H - Hurst exponent, a measure of self-similarity decay in a time series [3] approximated from beta
+        fractal_dim - fractal dimension, a measure of complexity and smoothness related to H by the equation [2] D = 2-H
+        d1_time_int - integral of the wavelet function when j = 1 
+        d10_time_int - integral of the wavelet function when j = 10
+        diff_time - difference between d1_time_int and d10_time_int
+        d1_fft_int - integral of the wavelet function's fourier transform when j = 1
+        d10_fft_int - integral of the wavelet function's fourier transform when j = 10
+        diff_fft - difference between d1_fft_int and d10_fft_int
+
+        [2]
+        Discrimination of Walking Patterns Using Wavelet-Based Fractal Analysis Masaki 
+        Sekine, Associate Member, IEEE, Toshiyo Tamura, Member, IEEE, Metin Akay, Senior 
+        Member, IEEE, Toshiro Fujimoto, Tatsuo Togawa, Senior Member, IEEE, and Yasuhiro 
+        Fukui, Member, IEEE
+        [3]
+        Cannon MJ, Percival DB, Caccia DC, Raymond GM, Bassingthwaighte JB. Evaluating 
+        scaled windowed variance methods for estimating the Hurst coefficient of time series. 
+        Physica A. 1997;241(3-4):606‐626. doi:10.1016/S0378-4371(97)00252-5        
+
+    """
+    js = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    wavelet = pywt.Wavelet('db4')
+    a, d10, d9, d8, d7, d6, d5, d4, d3, d2, d1 = pywt.wavedec(signal, wavelet, mode='symmetric', level=10)
+
+    Var_d=[]
+    for i in [d10, d9, d8, d7, d6, d5, d4, d3, d2, d1]:
+        N_j = len(i)-1
+        sum_d = 0
+        mean_d = np.mean(i)
+        for j in i:
+            sum_d += (j-mean_d)**2
+        Var_d.append(sum_d/N_j)
+    Var_d = Var_d[::-1]
+    regression = stats.linregress(js, np.log2(Var_d))
+    beta = regression.slope
+    H = (beta-1)/2
+    fractal_dim = 2-H
+    
+    d1_time_int = np.trapz(d1**2)
+    d10_time_int = np.trapz(d10**2)
+    diff_time = d10_time_int-d1_time_int
+    
+    fs1,pxx1 = sig.periodogram(d1, fs = 50, nfft = 1000, scaling = 'density', detrend = 'constant')
+    d1_fft_int = np.trapz(pxx1,fs1)
+    fs10,pxx10 = sig.periodogram(d10, fs = 50, nfft = 1000, scaling = 'density', detrend = 'constant')
+    d10_fft_int = np.trapz(pxx10,fs10)
+    
+    diff_fft = d10_fft_int-d1_fft_int
+
+    return [beta, H, fractal_dim, d1_time_int, d10_time_int, diff_time, d1_fft_int, d10_fft_int, diff_fft]
