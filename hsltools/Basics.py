@@ -4,16 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from tqdm import tqdm
-from dfa import dfa
+from .dfa import dfa
 import scipy.signal as sig
 from sklearn.linear_model import LogisticRegression
 from scipy.interpolate import interp1d
 from scipy.integrate import romb
 plt.rcParams.update({'font.size': 22})
-from hsl_functions import *
 import glob
 from scipy.signal import medfilt,butter
-import corner
 import scipy
 
 """
@@ -56,13 +54,12 @@ def signal_statistics(signal):
     maximum = np.max(signal)
     minimum = np.min(signal)
     iqr = stats.iqr(signal)
-    variation = stats.variation(signal)
     entropy = stats.entropy(np.abs(signal))
     corrtime = scaled_correlation_time(signal,signal) 
-    return np.asarray([mean, std, skewness, kurtosis, maximum, minimum, iqr, variation, entropy, corrtime])
+    return np.asarray([mean, std, skewness, kurtosis, maximum, minimum, iqr, entropy, corrtime])
 
 
-def ss_dataframe(signal):
+def basic_all_features(signal, name):
     """
     Returns signal_statistics of the signal in the form of a labeled data frame. 
 
@@ -78,7 +75,9 @@ def ss_dataframe(signal):
         maximum, minimum, iqr, variation, entropy, corrtime] (see signal_statistics).
 
     """
-    stat_names = ['mean', 'std', 'skewness', 'kurtosis', 'maximum', 'minimum', 'iqr', 'variation', 'entropy', 'corrtime']
+    basic_stats = signal_statistics(signal).reshape(-1, 1)
+    stat_names = ['mean', 'std', 'skewness', 'kurtosis', 'maximum', 'minimum', 'iqr', 'entropy', 'corrtime']
+    stat_names = [name + '_' + stat_names[ii] for ii in range(len(stat_names))]
     fdf = pd.DataFrame(columns = stat_names, data = basic_stats.T)
     return fdf
 

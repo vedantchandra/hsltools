@@ -16,7 +16,7 @@ import scipy
 import math
 from scipy.integrate import odeint
 
-from hsltools.basics import signal_statistics
+from .Basics import signal_statistics
 
 """
 Shimmer is a module consisting of features designed to specifically analyze Shimmer sensors.
@@ -413,111 +413,6 @@ def flux_stats(signal):
     return [maximum, minimum, integral, inflection_pt_max, inflection_pt_min, slope, intercept, rval]
 
 
-def bodyshimmer_features(signal):
-    """
-    Returns basics.signal_statistics and spectrum_statistics of the body signal in the form of a labeled data frame.
-
-    Parameters
-    ----------
-    signal : array-like
-        Array containing numbers whose basic and spectrum statistics are desired.
-
-    Returns
-    -------
-    DataFrame
-        Returns a data frame of basic and spectrum statistics with column headings [bodyshim_mean, 
-        bodyshim_std, bodyshim_skewness, bodyshim_kurtosis, bodyshim_maximum, bodyshim_minimum, 
-        bodyshim_iqr, bodyshim_variation, bodyshim_entropy, bodyshim_corrtime, bodyshim_peakfreq, 
-        bodyshim_peakpower, bodyshim_powerint, bodyshim_specenergy, bodyshim_shannon, bodyshim_spectral_centroid]
-        
-        bodyshim_mean, bodyshim_std, ..., bodyshim_skewness - see basics.signal_statistics
-        bodyshim_peakfreq, bodyshim_peakpower, ..., bodyshim_spectral_centroid - see spectrum_statistics
-
-    """
-    shim_stats = signal_statistics(signal).reshape(-1,1)
-    stat_names = ['bodyshim_mean', 'bodyshim_std', 'bodyshim_skewness', 'bodyshim_kurtosis', 'bodyshim_maximum', 'bodyshim_minimum', 'bodyshim_iqr', 'bodyshim_variation', 'bodyshim_entropy', 'bodyshim_corrtime']
-    fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
-    
-    spec_stats = np.asarray(spectrum_statistics(signal)).reshape(-1,1)
-    specstat_names = ['bodyshim_peakfreq','bodyshim_peakpower','bodyshim_powerint','bodyshim_specenergy', 'bodyshim_shannon', 'bodyshim_spectral_centroid']
-    spec_fdf = pd.DataFrame(columns = specstat_names, data = spec_stats.T)
-    
-    return fdf.join(spec_fdf)
-
-def headshimmer_features(signal):
-    """
-    Returns basics.signal_statistics and spectrum_statistics of the head signal in the form of a labeled data frame.
-
-    Parameters
-    ----------
-    signal : array-like
-        Array containing numbers whose basic and spectrum statistics are desired.
-
-    Returns
-    -------
-    DataFrame
-        Returns a data frame of basic and spectrum statistics with column headings [headshim_mean, 
-        headshim_std, headshim_skewness, headshim_kurtosis, headshim_maximum, headshim_minimum, 
-        headshim_iqr, headshim_variation, headshim_entropy, headshim_corrtime, headshim_peakfreq, 
-        headshim_peakpower, headshim_powerint, headshim_specenergy, headshim_shannon, headshim_spectral_centroid]
-        
-        headshim_mean, headshim_std, ..., headshim_skewness - see basics.signal_statistics
-        headshim_peakfreq, headshim_peakpower, ..., headshim_spectral_centroid - see spectrum_statistics
-
-    """
-    shim_stats = signal_statistics(signal).reshape(-1,1)
-    stat_names = ['headshim_mean', 'headshim_std', 'headshim_skewness', 'headshim_kurtosis', 'headshim_maximum', 'headshim_minimum', 'headshim_iqr', 'headshim_variation', 'headshim_entropy', 'headshim_corrtime']
-    fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
-    
-    spec_stats = np.asarray(spectrum_statistics(signal)).reshape(-1,1)
-    specstat_names = ['headshim_peakfreq','headshim_peakpower','headshim_powerint','headshim_specenergy', 'headshim_shannon', 'headshim_spectral_centroid']
-    spec_fdf = pd.DataFrame(columns = specstat_names, data = spec_stats.T)
-    
-    return fdf.join(spec_fdf)
-  
-def hr_features(signal):
-    """
-    Returns the basics.signal_statistics of the heart rate signal in the form of a labeled data frame. 
-
-    Parameters
-    ----------
-    signal : array-like
-        Array containing numbers whose basic statistics are desired.
-
-    Returns
-    -------
-    DataFrame
-        Returns a data frame of basic statistics with column headings [hr_mean, hr_std, hr_skewness, 
-        hr_kurtosis, hr_maximum, hr_minimum, hr_iqr, hr_variation, hr_entropy, hr_corrtime].
-
-    """
-    shim_stats = signal_statistics(signal).reshape(-1,1)
-    stat_names = ['hr_mean', 'hr_std', 'hr_skewness', 'hr_kurtosis', 'hr_maximum', 'hr_minimum', 'hr_iqr', 'hr_variation', 'hr_entropy', 'hr_corrtime']
-    fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
-    return fdf  
-
-def temp_features(signal):
-    """
-    Returns the basics.signal_statistics of the temperature signal in the form of a labeled data frame. 
-
-    Parameters
-    ----------
-    signal : array-like
-        Array containing numbers whose basic statistics are desired.
-
-    Returns
-    -------
-    DataFrame
-        Returns a data frame of basic statistics with column headings [temp_mean, temp_std, temp_skewness, 
-        temp_kurtosis, temp_maximum, temp_minimum, temp_iqr, temp_variation, temp_entropy, temp_corrtime].
-
-    """
-    shim_stats = signal_statistics(signal).reshape(-1,1)
-    stat_names = ['temp_mean', 'temp_std', 'temp_skewness', 'temp_kurtosis', 'temp_maximum', 'temp_minimum', 'temp_iqr', 'temp_variation', 'temp_entropy', 'temp_corrtime']
-    fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
-    return fdf
-
-
 def shimmer_all_features(signal):
     """
     Returns all of the Shimmer features of the signal in the form of a labeled data frame 
@@ -548,16 +443,16 @@ def shimmer_all_features(signal):
 
     """    
     shim_stats = signal_statistics(signal).reshape(-1,1)
-    stat_names = ['shim_mean', 'shim_std', 'shim_skewness', 'shim_kurtosis', 'shim_maximum', 'shim_minimum', 'shim_iqr', 'shim_variation', 'shim_entropy', 'shim_corrtime']
+    stat_names = ['shim_mean', 'shim_std', 'shim_skewness', 'shim_kurtosis', 'shim_maximum', 'shim_minimum', 'shim_iqr', 'shim_entropy', 'shim_corrtime']
     fdf = pd.DataFrame(columns = stat_names, data = shim_stats.T)
 
     spec_stats = np.asarray(spectrum_statistics(signal)).reshape(-1,1)
     specstat_names = ['shim_peakfreq','shim_peakpower','shim_powerint','shim_specenergy', 'shim_shannon', 'shim_spectral_centroid']
     spec_fdf = pd.DataFrame(columns = specstat_names, data = spec_stats.T)
 
-    flux_stats = np.asarray(flux_stats(signal)).reshape(-1,1)
+    flux_stat = np.asarray(flux_stats(signal)).reshape(-1,1)
     fluxstat_names = ['flux_maximum', 'flux_minimum', 'flux_integral', 'flux_inflection_pt_max', 'flux_inflection_pt_min', 'flux_slope', 'flux_intercept', 'flux_rval']
-    flux_fdf = pd.DataFrame(columns = fluxstat_names, data = flux_stats.T)
+    flux_fdf = pd.DataFrame(columns = fluxstat_names, data = flux_stat.T)
     
     functions = [approx_entropy, sample_entropy, multiscale_entropy]
     measure_names = ['approx_entropy', 'sample_entropy', 'multiscale_entropy']

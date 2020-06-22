@@ -196,7 +196,7 @@ def xbicorr(x, y):
             z += (N-m) * Cxyy(x, y, r, s, N)**2
     return z
 
-def multivar_all_feat(signal1, signal2, name): #returns all multivar features in data frame
+def multivar_all_features(signal1, signal2, name): #returns all multivar features in data frame
     """
     Returns all of the Multivar features of the two signals in the form of a labeled data frame (xcorr_lagtime, xbicorr).  
 
@@ -218,8 +218,8 @@ def multivar_all_feat(signal1, signal2, name): #returns all multivar features in
         name_xbicorr - see xbicorr
     
     """
-    functions = [xcorr_lagtime, xbicorr]
-    measure_names = [name+'_xcorr_lag', name+'_xbicorr']
+    functions = [xcorr_lagtime]
+    measure_names = [name+'_xcorr_lag']
     features = np.asarray([func(signal1, signal2) for func in functions]).reshape(-1,1)
     fdf = pd.DataFrame(columns = measure_names, data = features.T)
     return fdf

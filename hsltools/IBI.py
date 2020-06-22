@@ -4,16 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from tqdm import tqdm
-from dfa import dfa
+from .dfa import dfa
 import scipy.signal as sig
 from sklearn.linear_model import LogisticRegression
 from scipy.interpolate import interp1d
 from scipy.integrate import romb
 plt.rcParams.update({'font.size': 22})
-from hsl_functions import *
 import glob
 from scipy.signal import medfilt,butter
-import corner
 import scipy
 
 """

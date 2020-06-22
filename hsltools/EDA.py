@@ -102,7 +102,7 @@ def std_seconddiff(signal):
     """
     return np.std(np.abs(np.diff(signal, n=2)))
 
-def find_peaks(signal):
+def find_peaks(signal, medfilt_window = 31):
     """
     Returns the peaks of the EDA signal and returns the minima between the peaks.  
 
@@ -113,7 +113,9 @@ def find_peaks(signal):
     Parameters
     ----------
     signal : array-like
-        Array containing numbers whose peaks are desired.  
+        Array containing numbers whose peaks are desired.
+    medfilt_window : int, odd
+        Number of samples to consider when computing the median filtered signal before finding peaks. 
 
     Returns
     -------
@@ -123,7 +125,7 @@ def find_peaks(signal):
     
     """
     #normalize function
-    norm_signal = medfilt((signal-np.mean(signal))/np.std(signal), 31)
+    norm_signal = medfilt((signal-np.mean(signal))/np.std(signal), medfilt_window)
     #find peaks
     peaks, _ = sig.find_peaks(norm_signal, distance = len(signal)/12, prominence = 0.25)
     if len(peaks) == 0:
@@ -133,6 +135,7 @@ def find_peaks(signal):
     min_0 = np.argmin(signal[0:peaks[0]])
     min_peaks = [min_0]
     for i in range(1,len(peaks)):
+        min_i = np.argmin(signal[peaks[i-1]:peaks[i]])
         min_peaks.append((peaks[i-1]+min_i))
     return peaks, min_peaks
 
@@ -265,7 +268,7 @@ def eda_lfhf(signal):
 
     Parameters
     ----------
-    signal : array-like
+    signal : array-like`
         Array containing numbers whose ratio between low and high frequency passbands is desired. 
 
     Returns
@@ -276,7 +279,7 @@ def eda_lfhf(signal):
     """
     return eda_passbands(signal)[1]/eda_passbands(signal)[2]
 
-def eda_all_feat(signal): #returns all eda features in data frame
+def eda_all_features(signal): #returns all eda features in data frame
     """
     Returns all of the EDA features of the EDA signal in the form of a labeled data frame (mean_firstdiff, std_firstdiff, 
     mean_seconddiff, std_seconddiff, eda_lfhf, orienting_features).  

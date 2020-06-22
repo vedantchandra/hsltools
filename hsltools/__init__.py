@@ -23,3 +23,9 @@ questions/notes:
 """
 
 __all__ = ["basics", "eda", "ibi", "multivar", "shimmer"]
+
+from .Basics import *
+from .EDA import *
+from .IBI import *
+from .Multivar import *
+from .Shimmer import *
