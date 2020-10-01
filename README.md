@@ -4,4 +4,6 @@
 
 A multipurpose package for all your physiological signal processing needs. 
 
+[**Documentation**](https://hsltools.readthedocs.io/en/latest/)
+
 (c) The Human Spaceflight Lab @ Johns Hopkins University. 
